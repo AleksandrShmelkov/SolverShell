@@ -1,1 +1,13 @@
+// Folders
+CMakeFiles/
+Debug/
 src/
+test.dir/
+x64/
+
+// Files
+.vcxproj
+.filters
+.cmake
+CMakeCache.txt
+.sln
