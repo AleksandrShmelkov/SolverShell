@@ -1,11 +1,11 @@
-// Folders
+# Folders
 CMakeFiles/
 Debug/
 src/
 test.dir/
 x64/
 
-// Files
+# Files
 *.vcxproj
 *.filters
 *.cmake
