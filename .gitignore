@@ -6,8 +6,8 @@ test.dir/
 x64/
 
 // Files
-.vcxproj
-.filters
-.cmake
+*.vcxproj
+*.filters
+*.cmake
 CMakeCache.txt
-.sln
+*.sln
