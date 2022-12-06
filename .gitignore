@@ -3,10 +3,8 @@ CMakeFiles/
 Debug/
 test.dir/
 x64/
+.vscode/
+build/
+lib/
 
 # Files
-*.vcxproj
-*.filters
-*.cmake
-CMakeCache.txt
-*.sln

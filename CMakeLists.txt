@@ -1,7 +1,11 @@
-cmake_minimum_required (VERSION 3.25) 
+cmake_minimum_required (VERSION 3.23)
 
-# Set the project name
-project (test)
+project(ExampleProject)
 
-# Add an executable
-add_executable(test src/main.cpp)
+set(CMAKE_CXX_STANDARD 14)
+
+include_directories(src)
+
+add_subdirectory(src)
+add_subdirectory(test)
+add_subdirectory(lib/googletest)
