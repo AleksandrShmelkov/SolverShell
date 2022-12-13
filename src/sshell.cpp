@@ -1,7 +1,8 @@
-#include <iostream>
 #include "sshell_api.h"
 
 int main() {
-    std::cout << "Bla: " << Formula::bla(2) << std::endl;
+    SOSH_Functions func;
+    SOSH_DeclareFunction("summ", SOSH_Functions &func);
+    std::cout << "Get: " << func::get(0) << std::endl;
     return 0;
-}
+};
