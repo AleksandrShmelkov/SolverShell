@@ -1,8 +1,12 @@
 #include "sshell_api.h"
 
 int main() {
-    SOSH_Functions func;
-    SOSH_DeclareFunction("summ", SOSH_Functions& func);
-    std::cout << "Get: " << func.get(0) << std::endl;
+    SOSH_Manager Manager;
+    Manager.DeclareShell("Shell1");
+    SOSH_Shell Shell1 = Manager.FindShell("Shell1");
+    Shell1.DeclareFunction("summ");
+    std::cout << "Get: " << Shell1.FindFunction("summ").get() << std::endl;
+    std::vector<SOSH_Function> list;
+    list = Shell1.ListFunction();
     return 0;
 };
