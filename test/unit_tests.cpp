@@ -1,11 +1,9 @@
 #include "gtest/gtest.h"
 #include "sshell_api.h"
 
-TEST(blaTest, test1) {
-    //arrange
-    //act
-    //assert
-    EXPECT_EQ (Formula::bla (0),  0);
-    EXPECT_EQ (Formula::bla (10), 20);
-    EXPECT_EQ (Formula::bla (50), 100);
+TEST(SOSH_Test, test1) {
+    SOSH_Manager Manager;
+    Manager.DeclareShell("Shell1");
+    //ASSERT_THAT(Manager.ListShell(), ElementsAre("Shell1"));
+    EXPECT_EQ(Manager.FindShell("Shell1").get(), "Shell1");
 }
