@@ -1,4 +1,4 @@
-#include "sshell_api.h"
+﻿#include "sshell_api.h"
 
 int main() {
     SOSH_Manager Manager;
@@ -8,5 +8,9 @@ int main() {
     std::cout << "Get: " << Shell1.FindFunction("summ").get() << std::endl;
     std::vector<SOSH_Function> list;
     list = Shell1.ListFunction();
+    std::cout << "List: " << std::endl;
+    for (int i = 0; i < list.size(); i++) {
+        std::cout << list.at(i).get() << std::endl;
+    }
     return 0;
 };

@@ -6,17 +6,16 @@
 #include <string>
 typedef size_t shellid_t;
 
-shellid_t CreateShell();
+//shellid_t CreateShell();
 
-class SOSH_Manager {
+class SOSH_Function {
 private:
-    std::vector<SOSH_Shell> SHELL_POOL;
+    std::string name;
 public:
-    SOSH_Manager() = default;
-    ~SOSH_Manager() = default;
-    bool DeclareShell(const std::string s);
-    SOSH_Shell FindShell(const std::string s);
-    std::vector<SOSH_Shell> ListShell();
+    SOSH_Function() = default;
+    SOSH_Function(const std::string &s) :name(s) {};
+    ~SOSH_Function() = default;
+    std::string get();
 };
 
 class SOSH_Shell {
@@ -25,22 +24,23 @@ private:
     std::string name;
 public:
     SOSH_Shell() = default;
-    SOSH_Shell(const std::string &s):name(s) {};
+    SOSH_Shell(const std::string &s) :name(s) {};
     ~SOSH_Shell() = default;
-    bool DeclareFunction(const std::string s);
-    SOSH_Function FindFunction(const std::string s);
+    bool DeclareFunction(const std::string &s);
+    SOSH_Function FindFunction(const std::string &s);
     std::vector<SOSH_Function> ListFunction();
     std::string get();
 };
 
-class SOSH_Function {
+class SOSH_Manager {
 private:
-    std::string name;
+    std::vector<SOSH_Shell> SHELL_POOL;
 public:
-    SOSH_Function() = default;
-    SOSH_Function(const std::string &s):name(s) {};
-    ~SOSH_Function() = default;
-    std::string get();
+    SOSH_Manager() = default;
+    ~SOSH_Manager() = default;
+    bool DeclareShell(const std::string &s);
+    SOSH_Shell FindShell(const std::string &s);
+    std::vector<SOSH_Shell> ListShell();
 };
 
 #endif
