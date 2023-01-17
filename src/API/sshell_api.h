@@ -2,11 +2,8 @@
 #define SSHELL_API_H
 
 #include <iostream>
-#include <vector>
 #include <string>
-typedef size_t shellid_t;
-
-//shellid_t CreateShell();
+#include <vector>
 
 class SOSH_Function {
 private:
