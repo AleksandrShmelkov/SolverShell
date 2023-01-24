@@ -1,9 +1,22 @@
 ﻿#include "API/sshell_api.h"
 
+double sum(double x, double y){
+    return x + y;
+}
+
 int main() {
     SOSH_Manager Manager;
-    Manager.DeclareShell("Shell1");
+    Manager.CreateShell("Shell1");
     SOSH_Shell Shell1 = Manager.FindShell("Shell1");
+
+    SOSH_Function func("summ", sum);
+    Shell1.AddFunction(func);
+    SOSH_Function func2 = Shell1.FindFunction("summ");
+
+    double f = 3, k = 7;
+    std::cout << func2.Run(f, k) << std::endl;
+
+    /*
     Shell1.DeclareFunction("summ");
     std::cout << "Get: " << Shell1.FindFunction("summ").get() << std::endl;
     std::vector<SOSH_Function> list;
@@ -13,4 +26,5 @@ int main() {
         std::cout << list.at(i).get() << std::endl;
     }
     return 0;
+    */
 };

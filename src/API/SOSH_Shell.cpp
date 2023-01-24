@@ -1,25 +1,24 @@
 #include "sshell_api.h"
 
-bool SOSH_Shell::DeclareFunction(const std::string &s) {
-    SOSH_Function func(s);
-    FUNCS_POOL.push_back(func);
+bool SOSH_Shell::AddFunction(SOSH_Function f) {
+    funcs_pool.push_back(f);
     return true;
 };
 
 SOSH_Function SOSH_Shell::FindFunction(const std::string &s) {
-    for (int i = 0; i <= FUNCS_POOL.size() - 1; i++) {
-        if (s == FUNCS_POOL[i].get()) {
-            SOSH_Function &fp = FUNCS_POOL[i]; // Security?
+    for (int i = 0; i <= funcs_pool.size() - 1; i++) {
+        if (s == funcs_pool[i].Get()) {
+            SOSH_Function &fp = funcs_pool[i]; // Security?
             return fp;
         };
     };
-    return nullptr; 
+    //return nullptr; 
 };
 
 std::vector<SOSH_Function> SOSH_Shell::ListFunction() {
-    return FUNCS_POOL;
+    return funcs_pool;
 };
 
-std::string SOSH_Shell::get() {
+std::string SOSH_Shell::Get() {
     return name;
 };
