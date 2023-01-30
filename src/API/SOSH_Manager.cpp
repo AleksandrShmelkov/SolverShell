@@ -1,7 +1,7 @@
 #include "sshell_api.h"
 
 bool SOSH_Manager::CreateShell(const std::string &s) {
-    SOSH_Shell f(s); // , &func = func;
+    SOSH_Shell f(s);
     shell_pool.push_back(f);
     return true;
 };
@@ -12,7 +12,7 @@ SOSH_Shell SOSH_Manager::FindShell(const std::string &s) {
             return shell_pool[i];
         };
     };
-    return nullptr;
+    return SOSH_Shell();
 };
 
 std::vector<SOSH_Shell> SOSH_Manager::ListShell() {

@@ -14,7 +14,15 @@ int main() {
     SOSH_Function func2 = Shell1.FindFunction("summ");
 
     double f = 3, k = 7;
-    std::cout << func2.Run(f, k) << std::endl;
+    //std::cout << func2.Run(f, k) << std::endl;
+
+    SOSH_Parser pars;
+    std::vector<SOSH_Token> out;
+    out = pars.Tokenize("sum 8 4");
+
+    //for (auto &s: out) {
+    //    std::cout << s << std::endl;
+    //}
 
     /*
     Shell1.DeclareFunction("summ");

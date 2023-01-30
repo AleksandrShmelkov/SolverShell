@@ -11,5 +11,5 @@ bool SOSH_Function::AddFunction(const std::string &s, double (*l)(double,double)
 };
 
 double SOSH_Function::Run(double i, double j){
-    return link(i,j);
+    return link(i, j);
 };

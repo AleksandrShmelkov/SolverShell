@@ -27,7 +27,7 @@ public:
     SOSH_Shell() = default;
     SOSH_Shell(const std::string &s) :name(s) {};
     ~SOSH_Shell() = default;
-    bool AddFunction(SOSH_Function f);
+    bool AddFunction(SOSH_Function &f);
     SOSH_Function FindFunction(const std::string &s);
     std::vector<SOSH_Function> ListFunction();
     std::string Get();
@@ -42,6 +42,31 @@ public:
     bool CreateShell(const std::string &s);
     SOSH_Shell FindShell(const std::string &s);
     std::vector<SOSH_Shell> ListShell();
+};
+
+enum class Token_e { SOSH_FUNCTION_NAME, SOSH_INT, SOSH_DOUBLE, SOSH_STRING, SOSH_UNDEFINED };
+
+class SOSH_Token {
+private:
+    Token_e token;
+    std::string value;
+public:
+    SOSH_Token() = default;
+    SOSH_Token(Token_e t, const std::string &s) :token(t), value(s) {};
+    ~SOSH_Token() = default;
+    void EditToken(Token_e t);
+    void EditValue(const std::string &s);
+    // метод возвращающий данные в ее типе
+};
+
+class SOSH_Parser { // IST
+private:
+    std::string value;
+    std::vector<SOSH_Token> out;
+public:
+    SOSH_Parser() = default;
+    ~SOSH_Parser() = default;
+    std::vector<SOSH_Token> Tokenize(const std::string &s);
 };
 
 #endif
