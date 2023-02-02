@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <regex>
 
 class SOSH_Function {
 private:
@@ -56,6 +57,8 @@ public:
     ~SOSH_Token() = default;
     void EditToken(Token_e t);
     void EditValue(const std::string &s);
+    std::string TestToken();
+    std::string TestValue();
     // метод возвращающий данные в ее типе
 };
 

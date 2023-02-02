@@ -18,7 +18,12 @@ int main() {
 
     SOSH_Parser pars;
     std::vector<SOSH_Token> out;
-    out = pars.Tokenize("sum 8 4");
+    out = pars.Tokenize("sum qwer 4.667 8");
+
+    std::cout << out[0].TestToken() << " " << out[0].TestValue() << std::endl;
+    std::cout << out[1].TestToken() << " " << out[1].TestValue() << std::endl;
+    std::cout << out[2].TestToken() << " " << out[2].TestValue() << std::endl;
+    std::cout << out[3].TestToken() << " " << out[3].TestValue() << std::endl;
 
     //for (auto &s: out) {
     //    std::cout << s << std::endl;
