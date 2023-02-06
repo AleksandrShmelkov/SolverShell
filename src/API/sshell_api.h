@@ -72,4 +72,11 @@ public:
     std::vector<SOSH_Token> Tokenize(const std::string &s);
 };
 
+class SOSH_Arguments {
+private:
+public:
+    SOSH_Arguments() = default;
+    ~SOSH_Arguments() = default;
+};
+
 #endif
