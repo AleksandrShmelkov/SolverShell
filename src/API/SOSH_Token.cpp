@@ -1,5 +1,6 @@
 #include "sshell_api.h"
 
+/*
 void SOSH_Token::EditToken(Token_e t) {
     token = t;
 };
@@ -24,4 +25,14 @@ std::string SOSH_Token::TestToken(){
 
 std::string SOSH_Token::TestValue(){
     return value;
+};
+
+*/
+
+std::string SOSH_Token::Value(){
+    return value;
+};
+
+Token_t SOSH_Token::Type(){
+    return token;
 };

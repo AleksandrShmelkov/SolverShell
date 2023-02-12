@@ -12,7 +12,7 @@ TEST(SOSH_Manager, FindShell) {
     SOSH_Manager Manager;
     EXPECT_TRUE(Manager.CreateShell("Shell"));
     SOSH_Shell Shell = Manager.FindShell("Shell");
-    //EXPECT_TRUE(Shell.AddFunction("summ"));
-    //EXPECT_EQ(Shell.FindFunction("summ").get(), "summ"); // ?
+    //EXPECT_TRUE(Shell.AddFunction("sum"));
+    //EXPECT_EQ(Shell.FindFunction("sum").get(), "sum"); // ?
 }
 

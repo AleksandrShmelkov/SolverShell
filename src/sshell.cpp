@@ -9,21 +9,28 @@ int main() {
     Manager.CreateShell("Shell1");
     SOSH_Shell Shell1 = Manager.FindShell("Shell1");
 
-    SOSH_Function func("summ", sum);
+    SOSH_Function func("sum", sum);
     Shell1.AddFunction(func);
-    SOSH_Function func2 = Shell1.FindFunction("summ");
+    SOSH_Function func2 = Shell1.FindFunction("sum");
 
     double f = 3, k = 7;
-    //std::cout << func2.Run(f, k) << std::endl;
+    std::cout << func2.Run(f, k) << std::endl;
+
 
     SOSH_Parser pars;
     std::vector<SOSH_Token> out;
     out = pars.Tokenize("sum qwer 4.667 8");
 
-    std::cout << out[0].TestToken() << " " << out[0].TestValue() << std::endl;
+    std::cout << out[0].Value() << std::endl;
+    std::cout << out[1].Value() << std::endl;
+    std::cout << out[2].Value() << std::endl;
+    std::cout << out[3].Value() << std::endl;
+
+    /*std::cout << out[0].TestToken() << " " << out[0].TestValue() << std::endl;
     std::cout << out[1].TestToken() << " " << out[1].TestValue() << std::endl;
     std::cout << out[2].TestToken() << " " << out[2].TestValue() << std::endl;
-    std::cout << out[3].TestToken() << " " << out[3].TestValue() << std::endl;
+    std::cout << out[3].TestToken() << " " << out[3].TestValue() << std::endl;*/
+
 
     //for (auto &s: out) {
     //    std::cout << s << std::endl;

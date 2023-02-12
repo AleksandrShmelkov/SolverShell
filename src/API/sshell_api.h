@@ -45,22 +45,30 @@ public:
     std::vector<SOSH_Shell> ListShell();
 };
 
-enum class Token_e { SOSH_FUNCTION_NAME, SOSH_INT, SOSH_DOUBLE, SOSH_STRING, SOSH_UNDEFINED };
+enum class Token_t { SOSH_FUNCTION_NAME, SOSH_INT, SOSH_DOUBLE, SOSH_STRING, SOSH_UNDEFINED };
 
 class SOSH_Token {
 private:
-    Token_e token;
-    std::string value;
+    const Token_t token;
+    const std::string value;
 public:
-    SOSH_Token() = default;
-    SOSH_Token(Token_e t, const std::string &s) :token(t), value(s) {};
+    //SOSH_Token() = default; // возможно в дальнейшем удалим
+    SOSH_Token(Token_t t, const std::string &s) :token(t), value(s) {};
     ~SOSH_Token() = default;
-    void EditToken(Token_e t);
-    void EditValue(const std::string &s);
-    std::string TestToken();
-    std::string TestValue();
-    // метод возвращающий данные в ее типе
+    /*void EditToken(Token_e t); // закомнентировать
+    void EditValue(const std::string &s); // закомнентировать
+    std::string TestToken(); // удалииь
+    std::string TestValue(); // переименовать в Value
+    // добавить функцию Type которая возврвщает тип токена
+    // метод возвращающий данные в ее типе*/
+    std::string Value(); // сделать шаблонной
+    Token_t Type();
 };
+
+// SSHELL_toolkin.h файлы с токенами
+// SSHELL_toolkin.cpp
+// SOSH_function.h .cpp в нем классы фунции и аргументов
+
 
 class SOSH_Parser { // IST
 private:
