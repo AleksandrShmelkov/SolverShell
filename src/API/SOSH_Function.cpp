@@ -1,10 +1,10 @@
-#include "sshell_api.h"
+#include "SOSH_Function.h"
 
-std::string SOSH_Function::Get() {
+std::string SOSH_Function::GetName() {
     return name;
 };
 
-bool SOSH_Function::AddFunction(const std::string &s, double (*l)(double,double)){
+bool SOSH_Function::EditFunction(const std::string &s, double (*l)(double,double)){
     name = s;
     link = l;
     return true;

@@ -5,7 +5,7 @@ double sum(double x, double y){
 }
 
 int main() {
-    SOSH_Manager Manager;
+    /*SOSH_Manager Manager;
     Manager.CreateShell("Shell1");
     SOSH_Shell Shell1 = Manager.FindShell("Shell1");
 
@@ -14,27 +14,17 @@ int main() {
     SOSH_Function func2 = Shell1.FindFunction("sum");
 
     double f = 3, k = 7;
-    std::cout << func2.Run(f, k) << std::endl;
+    std::cout << func2.Run(f, k) << std::endl;*/
 
 
     SOSH_Parser pars;
     std::vector<SOSH_Token> out;
     out = pars.Tokenize("sum qwer 4.667 8");
 
-    std::cout << out[0].Value() << std::endl;
-    std::cout << out[1].Value() << std::endl;
-    std::cout << out[2].Value() << std::endl;
-    std::cout << out[3].Value() << std::endl;
-
-    /*std::cout << out[0].TestToken() << " " << out[0].TestValue() << std::endl;
-    std::cout << out[1].TestToken() << " " << out[1].TestValue() << std::endl;
-    std::cout << out[2].TestToken() << " " << out[2].TestValue() << std::endl;
-    std::cout << out[3].TestToken() << " " << out[3].TestValue() << std::endl;*/
-
-
-    //for (auto &s: out) {
-    //    std::cout << s << std::endl;
-    //}
+    SOSH_Token token(Token_t::SOSH_DOUBLE, "1.1");
+    double one = token.Value<double>();
+    std::cout << std::to_string(one) << std::endl;
+    std::string two = token.Value();
 
     /*
     Shell1.DeclareFunction("summ");

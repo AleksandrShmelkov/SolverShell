@@ -1,4 +1,4 @@
-#include "sshell_api.h"
+#include "SOSH_Shell.h"
 
 bool SOSH_Shell::AddFunction(SOSH_Function &f) {
     funcs_pool.push_back(f);
@@ -7,7 +7,7 @@ bool SOSH_Shell::AddFunction(SOSH_Function &f) {
 
 SOSH_Function SOSH_Shell::FindFunction(const std::string &s) {
     for (int i = 0; i <= funcs_pool.size() - 1; i++) {
-        if (s == funcs_pool[i].Get()) {
+        if (s == funcs_pool[i].GetName()) {
             return funcs_pool[i];
         };
     };
@@ -18,6 +18,6 @@ std::vector<SOSH_Function> SOSH_Shell::ListFunction() {
     return funcs_pool;
 };
 
-std::string SOSH_Shell::Get() {
+std::string SOSH_Shell::GetName() {
     return name;
 };

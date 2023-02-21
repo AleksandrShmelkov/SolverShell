@@ -1,18 +1,24 @@
 #include "gtest/gtest.h"
 #include "API/sshell_api.h"
 
-TEST(SOSH_Manager, CreateShell) {
-    SOSH_Manager Manager;
-    Manager.CreateShell("Shell");
-    EXPECT_EQ(Manager.FindShell("Shell").Get(), "Shell");
-    //ASSERT_THAT(Manager.ListShell(), ElementsAre("Shell"));
+TEST(SOSH_Manager, AddShell) {
+    SOSH_Manager manager;
+    SOSH_Shell shell("shell");
+    EXPECT_TRUE(manager.AddShell(shell));
 }
 
 TEST(SOSH_Manager, FindShell) {
-    SOSH_Manager Manager;
-    EXPECT_TRUE(Manager.CreateShell("Shell"));
-    SOSH_Shell Shell = Manager.FindShell("Shell");
-    //EXPECT_TRUE(Shell.AddFunction("sum"));
-    //EXPECT_EQ(Shell.FindFunction("sum").get(), "sum"); // ?
+    SOSH_Manager manager;
+    SOSH_Shell shell("shell");
+    manager.AddShell(shell);
+    EXPECT_EQ(manager.FindShell("shell").GetName(), "shell");
+    //ASSERT_THAT(manager.ListShell(), ElementsAre("Shell"));
+}
+
+TEST(SOSH_Manager, ListShell) {
+    SOSH_Manager manager;
+    SOSH_Shell shell("shell");
+    manager.AddShell(shell);
+    EXPECT_EQ(manager.ListShell().at(0).GetName(), "shell");
 }
 
