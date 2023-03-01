@@ -3,10 +3,15 @@
 
 #include <iostream>
 #include <string>
-#include <vector>
 #include <regex>
 #include <sstream>
+#include <tuple>
+#include <functional>
+#include <vector>
 #include <any>
+#include <type_traits>
+#include <typeinfo>
+#include <utility>
 
 /*
 template<class Function>
@@ -32,6 +37,19 @@ public:
 };
 */
 
+template<class Function>
+class SOSH_Function2 {
+private:
+    std::string name;
+    Function&& func;
+public:
+    SOSH_Function2(std::string s, Function&& f) :name(s), func(f) {};
+    template<class... Args> 
+    auto apply(Args&&... args){
+        return func(std::forward<Args>(args)...);
+    }
+};
+
 class SOSH_Function {
 private:
     std::string name;
@@ -45,8 +63,22 @@ public:
     std::string GetName();
 };
 
-template<class Function>
-class SOSH_Function2 {
+/*
+class SOSH_Function_Base {
+public:
+    virtual ~SOSH_Function_Base() {}
+    template<class... Args> 
+    auto apply(Args&&... args){
+        return func(std::forward<Args>(args)...);
+    }
+}; //: public SOSH_Function_Base 
+*/
+
+/*
+class SOSH_Function6 {
+public:
+    //SOSH_Function2() = default;
+    SOSH_Function2(std::string s, Function&& f) :name(s), func(f) {};
 private:
     std::string name;
     //double (*link)(double,double); // void*
@@ -54,15 +86,65 @@ private:
     //std::string arg;
     //Func func;
     //void* link;
-    Function&& func;
-public:
-    SOSH_Function2() = default;
-    SOSH_Function2(std::string s, Function&& f) :name(s), func(f) {};
-    template<class... Args> 
-    auto apply(Args&&... args){
-        return func(std::forward<Args>(args)...);
-    }
+    std::function<decltype(prt)> f_display_31337 = prt;
 };
+*/
+
+/*
+template<typename S>
+struct Signature;
+
+template<typename R, typename ...Args>
+struct Signature<R ( * )(Args...)> {
+    using RetType = R;
+
+    using Arguments = std::tuple<Args...>;
+};
+
+template<typename Func>
+void test(Func f) {
+    using Sig = Signature<Func>;
+    Sig s; //Error: Sig<Func> - undefined struct
+}
+*/
+
+/*
+class FunctionWrapper {
+public:
+    template <typename Func, typename... Args>
+    FunctionWrapper(Func func, Args&&... args)
+        : func_(std::bind(func, std::forward<Args>(args)...)) {}
+
+    void operator()() {
+        func_();
+    }
+
+private:
+    std::function<void()> func_;
+};
+*/
+
+/*
+template <typename ReturnType, typename... Args>
+class FunctionWrapper {
+public:
+    FunctionWrapper(std::function<ReturnType(Args...)> func, Args... args)
+        : func_(func), args_(std::make_tuple(args...)) {}
+
+    ReturnType operator()() {
+        return callFunc(typename std::make_index_sequence<sizeof...(Args)>{});
+    }
+
+private:
+    template <std::size_t... Is>
+    ReturnType callFunc(std::index_sequence<Is...>) {
+        return func_(std::get<Is>(args_)...);
+    }
+
+    std::function<ReturnType(Args...)> func_;
+    std::tuple<Args...> args_;
+};
+*/
 
 /*
 class SOSH_Function3 {
