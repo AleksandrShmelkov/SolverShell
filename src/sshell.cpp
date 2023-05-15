@@ -1,7 +1,10 @@
 ﻿#include "API/sshell_api.h"
 
+constexpr Token_t TInt = Token_t::SOSH_INT;
+constexpr Token_t TDouble = Token_t::SOSH_DOUBLE;
+constexpr Token_t TString = Token_t::SOSH_STRING;
+
 int sum(int x, double y, std::string z) {
-    std::cout << typeid(z).name() << std::endl;
     std::cout << "x = " << x << " y = " << y << " z = " << z << "\n";
     return x + y;
 };
@@ -68,34 +71,23 @@ void test_SOSH_Function2_Base_Create(){
     delete func;
 };
 
-void test_AddToken(){
-    SOSH_Function2 SOSH_Function2_sum("sum", sum);
-    SOSH_Token token1(Token_t::SOSH_FUNCTION_NAME, "sum");
-    SOSH_Token token2(Token_t::SOSH_INT, "4");
-    SOSH_Token token3(Token_t::SOSH_DOUBLE, "5.0");
-    SOSH_Token token4(Token_t::SOSH_STRING, "QWERTY");
-    SOSH_Function2_sum.DeclareReturn(token1);
-    SOSH_Function2_sum.DeclareArgs(token2);
-    SOSH_Function2_sum.DeclareArgs(token3);
-    SOSH_Function2_sum.DeclareArgs(token4);
-};
-/*
-void test_sosh3(){
+void test_Token(){
     SOSH_Function3 SOSH_Function3_sum("sum", sum);
-    int result = SOSH_Function3_sum.apply(4,5,"QWERTY");
-    std::cout << "Result: " << result << std::endl << std::endl;
+    SOSH_Function3_sum.AddReturn(TInt);
+    SOSH_Function3_sum.AddArgs(TInt);
+    SOSH_Function3_sum.AddArgs(TDouble);
+    SOSH_Function3_sum.AddArgs(TString);
 
-    //SOSH_Function3_Base& SOSH_Function3_Base_sum = SOSH_Function3_sum;
-    //SOSH_Function3_Base* SOSH_Function3_Base_sum = &SOSH_Function3_sum;
-    std::shared_ptr<SOSH_Function3_Base> SOSH_Function3_Base_sum = std::make_shared<decltype(SOSH_Function3_sum)>(SOSH_Function3_sum);
-
-    auto result2 = SOSH_Function3_Base_sum->apply<int>(4,5.0,std::string("QWERTY"));
-    std::cout << "Result: " << typeid(result2).name() << std::endl << std::endl;
+    SOSH_Function3_Base& SOSH_Function3_Base_sum = SOSH_Function3_sum;
+    SOSH_Token t1(TInt, "5");
+    SOSH_Token t2(TDouble, "3.4");
+    SOSH_Token t3(TString, "hell");
+    auto result = SOSH_Function3_Base_sum.apply(t1, t2, t3);
+    std::cout << "Result: " << typeid(result).name() << std::endl << std::endl;
 };
-*/
 
 int main() {
-    //system("chcp 65001");
+    system("chcp 65001");
 
     std::cout << "\n ***  test_sum_int_double  ***" << std::endl << std::endl;
     test_sum_int_double();
@@ -109,8 +101,8 @@ int main() {
     std::cout << "\n ***  test_SOSH_Function2_Base_Create  ***" << std::endl << std::endl;
     test_SOSH_Function2_Base_Create();
 
-    std::cout << "\n ***  test_AddToken  ***" << std::endl << std::endl;
-    test_AddToken();
+    std::cout << "\n ***  test_Token  ***" << std::endl << std::endl;
+    test_Token();
 
     //std::cout << "\n ***  test_sosh3  ***" << std::endl << std::endl;
     //test_sosh3();

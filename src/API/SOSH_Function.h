@@ -49,6 +49,8 @@ protected:
     std::string name;
     std::optional<std::type_index> type;
     std::optional<std::type_index> r_type;
+    std::optional<SOSH_Token> token_return;
+    std::vector<SOSH_Token> tokens_args;
 public:
     virtual ~SOSH_Function2_Base() = default;
 
@@ -106,8 +108,6 @@ private:
     typedef R (*Func)(Args...);
     Func func;
     std::tuple<Args...> args;
-    //SOSH_Token token_return;
-    std::vector<SOSH_Token> tokens_args;
 public:
     SOSH_Function2(std::string s, Func f) : func(f), args(std::tuple<Args...>{}) {
         this->name = s;
@@ -128,15 +128,16 @@ public:
     };
 
     void DeclareReturn(SOSH_Token token){
-        //token_return = token;
+        this->token_return = token;
     };
 
     void DeclareArgs(SOSH_Token token){
-        tokens_args.push_back(token);
+        this->tokens_args.push_back(token);
     };
 
     R apply(Args&&... args){
         return func(std::forward<Args>(args)...);
+        //return func(std::forward<SOSH_Token>(args.Value())...);
     };
 
     R apply(std::tuple<Args...> args_tuple){
@@ -191,150 +192,106 @@ public:
 
 
 
-/*
-template <class data_type>
-class copy_on_write
-{
-public:
-    copy_on_write(data_type* data)
-        : m_data(data) {
-    }
-    data_type const* operator -> () const {
-        return m_data.get();
-    }
-    data_type* operator -> () {
-        if (!m_data.unique())
-            m_data.reset(new data_type(*m_data));
-        return m_data.get();
-    }
-private:
-    std::shared_ptr<data_type> m_data;
-};
-
-class object {
-public:
-    object() = default;
-    template <class T>
-    void set(T data){
-        m_data = data;
-    };
-    auto get(){
-        return m_data;
-    };
-protected:
-    class data;
-private:
-    copy_on_write<data> m_data;
-};*/
 
 
-/*
 class SOSH_Function3_Base {
 protected:
     std::string name;
-    std::optional<std::type_index> r_type;
+    Token_t type_return;
+    std::vector<Token_t> type_args;
 public:
     virtual ~SOSH_Function3_Base() = default;
 
-    template<typename R>
-    static SOSH_Function3_Base* Create(std::string name, R* func){
-        return new SOSH_Function3<R>(name, func);
-    };
+    template<typename... Token>
+    auto apply(Token&&... args){
+        static_assert((std::is_same_v<SOSH_Token, std::remove_reference_t<Token>> && ...), "All arguments to apply must have type Token_t");
+        std::vector<SOSH_Token> token_args = {args...};
+        std::tuple<Token...> arg_tuple(std::forward<Token>(args)...);
+        std::tuple<Token&...> ref_tuple = std::apply([](auto&... args){ return std::make_tuple(std::ref(args)...); }, arg_tuple);
 
-    std::string GetName(){
-        return name;
-    };
+        if (type_args.size() == token_args.size()) {
+            int i = 0;
+            for (;i < token_args.size(); i++) {
+                if (type_args[i] != token_args[i].GetType()) { break; };
+            };
 
-    std::string GetReturnType(){
-        return r_type.value().name();
-    };
-
-    template<typename R, typename... Args>
-    auto apply(Args&&... args){
-        typedef R (*typereturn)(Args...) ;
-        auto func = dynamic_cast<SOSH_Function3<R>*>(this);
-
-        //std::tuple<Args...> test(std::forward<Args>(args)...);
-        //std::cout << "SOSH_Function3_Base test: " << typeid(test).name() << std::endl;
-        //std::cout << "SOSH_Function3_Base func: " << typeid(func).name() << std::endl;
-
-        //if( func == nullptr ) { throw std::runtime_error("casting failed"); };
+            if (token_args.size() == i) { 
+                return applyWrapper(sizeof...(args), ref_tuple);
+            } else {
+                std::cout << "Inconsistency with the expected type of argument. Expected " 
+                    << token_names[static_cast<int>(type_args[i])] << " but received " 
+                    << token_names[static_cast<int>(token_args[i].GetType())] << "." << std::endl;
+            };
+        } else {
+            std::cout << "A mismatch in the number of arguments. The number of arguments when the function is called is not the same as the number of its mandatory arguments." << std::endl;
+        };
         
-        return func->apply(std::forward<Args>(args)...);
-        //return 0;
-        //return static_cast<SOSH_Function3<R>&>(*this).apply_impl(std::forward<Args>(args)...);
+        return SOSH_Token(Token_t::SOSH_UNDEFINED, "");
     };
+
+    virtual SOSH_Token applyWrapper(int count, ...) = 0;
 };
 
-template<typename R>
-class SOSH_Function3;
+template <typename Args> struct ToType2_ { using type = SOSH_Token&; };
+template <typename... Args> using ToType2 = typename ToType2_<Args...>::type;
 
-template<typename R, typename... Args>
-class SOSH_Function3<R(Args...)> : public SOSH_Function3_Base {
-private:
-    typedef R(*Func)(Args...);
-    Func func;
-public:
-    SOSH_Function3(std::string s, Func f) : func(f) {
-        this->name = s;
-        this->r_type = typeid(R);
-    };
-    
-    SOSH_Function3(const SOSH_Function3& other) : func(other.func) { // copy constructor 
-        this->name = other.name;
-        this->r_type = other.r_type;
-    };
-
-    SOSH_Function3(SOSH_Function3&& other) noexcept : func(std::move(other.func)) { // move constructor  
-        this->name = std::move(other.name);
-        this->r_type = std::move(other.r_type);
-    };
-
-    auto apply(Args... args) {
-        std::cout << "Vhod" << std::endl;
-        std::tuple<Args...> test(args...);
-        std::cout << "SOSH_Function3 test: " << typeid(test).name() << std::endl;
-        std::cout << "SOSH_Function3 func: " << typeid(func).name() << std::endl;
-        return func(args...);
-    };
-};
-*/
-
-
-//  ------------------------------------------------
-
-/*
-template<typename R>
+template<class R, class... Args>
 class SOSH_Function3 : public SOSH_Function3_Base {
 private:
-    typedef R* Func;
+    typedef R (*Func)(Args...);
     Func func;
+    using ArgsToToken = std::tuple<ToType2<Args>...>;
 public:
     SOSH_Function3(std::string s, Func f) : func(f) {
         this->name = s;
-        this->r_type = typeid(R);
     };
-    
     SOSH_Function3(const SOSH_Function3& other) : func(other.func) { // copy constructor 
         this->name = other.name;
-        this->r_type = other.r_type;
     };
-
-    SOSH_Function3(SOSH_Function3&& other) noexcept : func(std::move(other.func)) { // move constructor  
+    SOSH_Function3(SOSH_Function3&& other) noexcept : func(std::move(other.func)), args(std::move(other.args)) { // move constructor  
         this->name = std::move(other.name);
-        this->r_type = std::move(other.r_type);
     };
 
-    template<typename... Args>
-    auto apply(Args&&... args) {
-        std::cout << "Vhod" << std::endl;
-        std::tuple<Args...> test(std::forward<Args>(args)...);
-        std::cout << "SOSH_Function3 test: " << typeid(test).name() << std::endl;
-        std::cout << "SOSH_Function3 func: " << typeid(func).name() << std::endl;
-        //return func(std::forward<Args>(args)...);
-        return 0;
+    void AddReturn(Token_t type){
+        this->type_return = type;
     };
-};*/
+    void AddArgs(Token_t type){
+        this->type_args.push_back(type);
+    };
+
+    template<class... Args2>
+    R apply(Args2&&... args){
+        return func(std::forward<Args2>(args)...);
+    };
+
+    R apply(ArgsToToken args_tuple){
+        return std::apply(func, std::forward<Args>(args_tuple.GetValue<Args>())...);
+    };
+
+    R apply(std::tuple<Args...> args_tuple){
+        return std::apply(func, std::move(args_tuple));
+    };
+
+    SOSH_Token applyWrapper(int count, ...) override {   
+        va_list ptr;
+        va_start(ptr, count);
+        auto args_tuple = va_arg(ptr, ArgsToToken);
+        va_end(ptr);
+
+        std::tuple<Args...> true_tuple = std::apply([](auto&... args){ 
+            return std::make_tuple(std::forward<Args>(args.GetValue<Args>())...); 
+        }, args_tuple);
+
+        auto res = std::to_string(apply(true_tuple));
+        SOSH_Token res_token(this->type_return, res);
+        return res_token;
+    };
+};
+
+
+
+
+
 
 class SOSH_Function {
 private:
