@@ -11,14 +11,14 @@
 
 class SOSH_Shell {
 private:
-    std::vector<SOSH_Function> funcs_pool;
+    std::vector<std::reference_wrapper<SOSH_Function_Base>> funcs_pool;
     std::string name;
 public:
     SOSH_Shell() = default;
     SOSH_Shell(const std::string &s) :name(s) {};
-    bool AddFunction(SOSH_Function &f);
-    SOSH_Function FindFunction(const std::string &s);
-    std::vector<SOSH_Function> ListFunction();
+    bool AddFunction(SOSH_Function_Base &f);
+    SOSH_Function_Base* FindFunction(const std::string &s);
+    std::vector<std::reference_wrapper<SOSH_Function_Base>> ListFunction();
     std::string GetName();
 };
 

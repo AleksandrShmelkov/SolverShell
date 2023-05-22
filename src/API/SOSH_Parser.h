@@ -15,6 +15,7 @@ private:
     std::vector<SOSH_Token> out;
 public:
     std::vector<SOSH_Token> Tokenize(const std::string &s);
+    std::vector<SOSH_Token> Tokenize2(const std::string &s);
 };
 
 #endif

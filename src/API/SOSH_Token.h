@@ -4,7 +4,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <regex>
 #include <sstream>
 #include <variant>
 
@@ -61,5 +60,9 @@ auto SOSH_Token::GetValueByTokenType() const {
         return value;
     };
 };
+
+// Дочерний класс для описания добавляемых типов ?
+// Создать структуру в виде двухсвязного списка где поля содержит ссылку на объект типа этой структуры ? 
+// ...Первй пустой обьект этой структуры присвоить классу shell. Структура будет содержать ссылки на обьекты класса функции.
 
 #endif

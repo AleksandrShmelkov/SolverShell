@@ -3,25 +3,158 @@
 
 #include <iostream>
 #include <string>
-#include <regex>
-#include <sstream>
 #include <tuple>
-#include <functional>
 #include <vector>
-#include <any>
-#include <type_traits>
-#include <typeinfo>
-#include <utility>
-#include <unordered_map>
-#include <memory>
-#include <map>
 #include <typeindex>
 #include <optional>
 #include <cstdarg>
-#include <array>
-#include <cassert>
-
 #include "API/SOSH_Token.h"
+
+class SOSH_Function_Base {
+protected:
+    std::string name;
+    Token_t type_return;
+    std::vector<Token_t> type_args;
+public:
+    virtual ~SOSH_Function_Base() = default;
+
+    std::string GetName() {
+        return name;
+    };
+    
+    auto call(std::vector<SOSH_Token> &tokens){
+        if (tokens.size() == 1) {
+             auto result = apply();
+             return result;
+        } else if (tokens.size() == 2) {
+            auto result = apply(tokens[1]);
+            return result;
+        } else if (tokens.size() == 3) {
+            auto result = apply(tokens[1], tokens[2]);
+            return result;
+        } else if (tokens.size() == 4) {
+            auto result = apply(tokens[1], tokens[2], tokens[3]);
+            return result;
+        } else if (tokens.size() == 5) {
+            auto result = apply(tokens[1], tokens[2], tokens[3], tokens[4]);
+            return result;
+        } else if (tokens.size() == 6) {
+            auto result = apply(tokens[1], tokens[2], tokens[3], tokens[4], tokens[5]);
+            return result;
+        } else if (tokens.size() == 7) {
+            auto result = apply(tokens[1], tokens[2], tokens[3], tokens[4], tokens[5], tokens[6]);
+            return result;
+        } else {
+            throw std::runtime_error("Too many arguments");
+        };
+    };
+
+    template<typename... Token>
+    auto apply(Token&&... args){
+        static_assert((std::is_same_v<SOSH_Token, std::remove_reference_t<Token>> && ...), "All arguments to apply must have type Token_t");
+        std::vector<SOSH_Token> token_args = {args...};
+        std::tuple<Token...> arg_tuple(std::forward<Token>(args)...);
+        std::tuple<Token&...> ref_tuple = std::apply([](auto&... args){ return std::make_tuple(std::ref(args)...); }, arg_tuple);
+
+        if (type_args.size() == token_args.size()) {
+            int i = 0;
+            for (;i < token_args.size(); i++) {
+                if (type_args[i] != token_args[i].GetType()) { break; };
+            };
+
+            if (token_args.size() == i) { 
+                return applyWrapper(sizeof...(args), ref_tuple);
+            } else {
+                std::cout << "Inconsistency with the expected type of argument. Expected " 
+                    << token_names[static_cast<int>(type_args[i])] << " but received " 
+                    << token_names[static_cast<int>(token_args[i].GetType())] << "." << std::endl;
+            };
+        } else {
+            std::cout << "A mismatch in the number of arguments. The number of arguments when the function is called is not the same as the number of its mandatory arguments." << std::endl;
+        };
+        
+        return SOSH_Token(Token_t::SOSH_UNDEFINED, "");
+    };
+
+    virtual SOSH_Token applyWrapper(int count, ...) = 0;
+};
+
+template <typename Args> struct ToType2_ { using type = SOSH_Token&; };
+template <typename... Args> using ToType2 = typename ToType2_<Args...>::type;
+
+template<class R, class... Args>
+class SOSH_Function : public SOSH_Function_Base {
+private:
+    typedef R (*Func)(Args...);
+    Func func;
+    using ArgsToToken = std::tuple<ToType2<Args>...>;
+public:
+    SOSH_Function(std::string s, Func f) : func(f) {
+        this->name = s;
+    };
+    SOSH_Function(const SOSH_Function& other) : func(other.func) { // copy constructor 
+        this->name = other.name;
+    };
+    SOSH_Function(SOSH_Function&& other) noexcept : func(std::move(other.func)), args(std::move(other.args)) { // move constructor  
+        this->name = std::move(other.name);
+    };
+
+    void AddReturn(Token_t type){
+        this->type_return = type;
+    };
+    void AddArgs(Token_t type){
+        this->type_args.push_back(type);
+    };
+
+    template<class... Args2>
+    R apply(Args2&&... args){
+        return func(std::forward<Args2>(args)...);
+    };
+
+    /*R apply(ArgsToToken args_tuple){
+        return std::apply(func, std::forward<Args>(args_tuple.GetValue<Args>())...);
+    };*/
+
+    R apply(std::tuple<Args...> args_tuple){
+        return std::apply(func, std::move(args_tuple));
+    };
+
+    SOSH_Token applyWrapper(int count, ...) override {   
+        va_list ptr;
+        va_start(ptr, count);
+        auto args_tuple = va_arg(ptr, ArgsToToken);
+        va_end(ptr);
+
+        std::tuple<Args...> true_tuple = std::apply([](auto&... args){ 
+            return std::make_tuple(std::forward<Args>(args.GetValue<Args>())...); 
+        }, args_tuple);
+
+        if constexpr (std::is_void_v<R>) {
+            apply(true_tuple);
+            SOSH_Token res_token(Token_t::SOSH_VOID, "");
+            return res_token;
+        } else {
+            auto res = std::to_string(apply(true_tuple));
+            SOSH_Token res_token(this->type_return, res);
+            return res_token;
+        };
+    };
+};
+
+/*
+class SOSH_Function {
+private:
+    std::string name;
+    double (*link)(double,double); // void*
+    std::string arg;
+public:
+    SOSH_Function() = default;
+    SOSH_Function(const std::string &s, double (*l)(double,double)) :name(s), link(l) {};
+    bool EditFunction(const std::string &s, double (*l)(double,double));
+    double Run(double i, double j);
+    std::string GetName();
+};
+*/
 
 template <typename... Ts, std::size_t... Is>
 auto tuple_reverse_helper(const std::tuple<Ts...>& tpl, std::index_sequence<Is...>) {
@@ -182,128 +315,6 @@ public:
         //std::tuple<int, double, char> tpl(1, 2.0, 'c');
         //auto tpl_reversed = tuple_reverse(tpl);
     };
-};
-
-
-
-
-
-
-
-
-
-
-
-class SOSH_Function3_Base {
-protected:
-    std::string name;
-    Token_t type_return;
-    std::vector<Token_t> type_args;
-public:
-    virtual ~SOSH_Function3_Base() = default;
-
-    template<typename... Token>
-    auto apply(Token&&... args){
-        static_assert((std::is_same_v<SOSH_Token, std::remove_reference_t<Token>> && ...), "All arguments to apply must have type Token_t");
-        std::vector<SOSH_Token> token_args = {args...};
-        std::tuple<Token...> arg_tuple(std::forward<Token>(args)...);
-        std::tuple<Token&...> ref_tuple = std::apply([](auto&... args){ return std::make_tuple(std::ref(args)...); }, arg_tuple);
-
-        if (type_args.size() == token_args.size()) {
-            int i = 0;
-            for (;i < token_args.size(); i++) {
-                if (type_args[i] != token_args[i].GetType()) { break; };
-            };
-
-            if (token_args.size() == i) { 
-                return applyWrapper(sizeof...(args), ref_tuple);
-            } else {
-                std::cout << "Inconsistency with the expected type of argument. Expected " 
-                    << token_names[static_cast<int>(type_args[i])] << " but received " 
-                    << token_names[static_cast<int>(token_args[i].GetType())] << "." << std::endl;
-            };
-        } else {
-            std::cout << "A mismatch in the number of arguments. The number of arguments when the function is called is not the same as the number of its mandatory arguments." << std::endl;
-        };
-        
-        return SOSH_Token(Token_t::SOSH_UNDEFINED, "");
-    };
-
-    virtual SOSH_Token applyWrapper(int count, ...) = 0;
-};
-
-template <typename Args> struct ToType2_ { using type = SOSH_Token&; };
-template <typename... Args> using ToType2 = typename ToType2_<Args...>::type;
-
-template<class R, class... Args>
-class SOSH_Function3 : public SOSH_Function3_Base {
-private:
-    typedef R (*Func)(Args...);
-    Func func;
-    using ArgsToToken = std::tuple<ToType2<Args>...>;
-public:
-    SOSH_Function3(std::string s, Func f) : func(f) {
-        this->name = s;
-    };
-    SOSH_Function3(const SOSH_Function3& other) : func(other.func) { // copy constructor 
-        this->name = other.name;
-    };
-    SOSH_Function3(SOSH_Function3&& other) noexcept : func(std::move(other.func)), args(std::move(other.args)) { // move constructor  
-        this->name = std::move(other.name);
-    };
-
-    void AddReturn(Token_t type){
-        this->type_return = type;
-    };
-    void AddArgs(Token_t type){
-        this->type_args.push_back(type);
-    };
-
-    template<class... Args2>
-    R apply(Args2&&... args){
-        return func(std::forward<Args2>(args)...);
-    };
-
-    R apply(ArgsToToken args_tuple){
-        return std::apply(func, std::forward<Args>(args_tuple.GetValue<Args>())...);
-    };
-
-    R apply(std::tuple<Args...> args_tuple){
-        return std::apply(func, std::move(args_tuple));
-    };
-
-    SOSH_Token applyWrapper(int count, ...) override {   
-        va_list ptr;
-        va_start(ptr, count);
-        auto args_tuple = va_arg(ptr, ArgsToToken);
-        va_end(ptr);
-
-        std::tuple<Args...> true_tuple = std::apply([](auto&... args){ 
-            return std::make_tuple(std::forward<Args>(args.GetValue<Args>())...); 
-        }, args_tuple);
-
-        auto res = std::to_string(apply(true_tuple));
-        SOSH_Token res_token(this->type_return, res);
-        return res_token;
-    };
-};
-
-
-
-
-
-
-class SOSH_Function {
-private:
-    std::string name;
-    double (*link)(double,double); // void*
-    std::string arg;
-public:
-    SOSH_Function() = default;
-    SOSH_Function(const std::string &s, double (*l)(double,double)) :name(s), link(l) {};
-    bool EditFunction(const std::string &s, double (*l)(double,double));
-    double Run(double i, double j);
-    std::string GetName();
 };
 
 // SOSH_function.h .cpp в нем классы функций и аргументов

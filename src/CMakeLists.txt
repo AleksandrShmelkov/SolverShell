@@ -1,6 +1,8 @@
 set(BINARY ${CMAKE_PROJECT_NAME})
 add_executable(${BINARY}_run 
     sshell.cpp 
+	Equation.cpp 
+	Equation.h 
     API/SOSH_Function.cpp 
     API/SOSH_Function.h 
     API/SOSH_Manager.cpp 
@@ -14,6 +16,8 @@ add_executable(${BINARY}_run
     API/sshell_api.h)
 add_library(${BINARY}_lib STATIC 
     sshell.cpp 
+	Equation.cpp 
+	Equation.h 
     API/SOSH_Function.cpp 
     API/SOSH_Function.h 
     API/SOSH_Manager.cpp 
