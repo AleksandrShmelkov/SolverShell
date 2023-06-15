@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef SOSH_PARSER_H
 #define SOSH_PARSER_H
 
@@ -9,13 +11,23 @@
 
 #include "API/SOSH_Token.h"
 
+/*
+
+Класс SOSH_Parser представляет собой парсер для DSL языка. 
+
+Он содержит следующие поля и методы:
+- value - приватное строковое поле, хранящее входную строку, которую нужно разобрать на токены.
+- out - приватный вектор объектов класса SOSH_Token, который будет хранить выходные токены, полученные в результате парсинга входной строки.
+- Tokenize(const std::string &s) - публичный метод, который принимает в качестве аргумента ссылку на константную строку s, содержащую входную команду, и возвращает вектор объектов SOSH_Token. Этот метод выполняет разбиение входной строки на отдельные лексемы (токены) и сохраняет их в вектор out.
+
+*/
+
 class SOSH_Parser { // IST
 private:
-    std::string value;
-    std::vector<SOSH_Token> out;
+    std::string value; // приватное строковое поле, хранящее входную строку, которую нужно разобрать на токены
+    std::vector<SOSH_Token> out; // приватный вектор объектов класса SOSH_Token, который будет хранить выходные токены, полученные в результате парсинга входной строки
 public:
-    std::vector<SOSH_Token> Tokenize(const std::string &s);
-    std::vector<SOSH_Token> Tokenize2(const std::string &s);
+    std::vector<SOSH_Token> Tokenize(const std::string &s); // метод, который токенизирует строку и возвращает вектор токенов
 };
 
 #endif

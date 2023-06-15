@@ -1,5 +1,7 @@
 ﻿#include "API/sshell_api.h"
 #include "Equation.h"
+#include <set>
+#include <unordered_set>
 
 constexpr Token_t TInt = Token_t::SOSH_INT;
 constexpr Token_t TDouble = Token_t::SOSH_DOUBLE;
@@ -146,10 +148,10 @@ void Equation_line_func(int a, int b){
 void test_Equation(){
     //Equation_func(1, -8, 16);
 
-    SOSH_Function SOSH_Equation_func("equation", Equation_line_func);
+    SOSH_Function SOSH_Equation_func("equation", Equation_func);
     SOSH_Equation_func.AddArgs(TInt);
     SOSH_Equation_func.AddArgs(TInt);
-    //SOSH_Equation_func.AddArgs(TInt);
+    SOSH_Equation_func.AddArgs(TInt);
     SOSH_Function_Base& SOSH_Equation_Base_func = SOSH_Equation_func;
 
     SOSH_Shell BaseEqsCounter("BaseEqsCounter");
@@ -157,16 +159,27 @@ void test_Equation(){
     auto BaseEqsCounter_func = BaseEqsCounter.FindFunction("equation");
 
     SOSH_Parser pars;
-    std::cout << "sosh> ";
+    std::cout << "\nsosh> ";
     std::string input = "equation 1 -8 16";
-    getline(std::cin, input);
+    //getline(std::cin, input);
     std::vector<SOSH_Token> tokens = pars.Tokenize(input);
 
     std::cout << std::endl;
-    BaseEqsCounter_func->call(tokens);
+    BaseEqsCounter_func->call<3>(tokens);
     std::cout << std::endl;
 
-    getline(std::cin, input);
+    //getline(std::cin, input);
+
+    /*std::tuple<SOSH_Token> t1 = SOSH_Token(TInt, "5");
+    std::tuple<SOSH_Token> t2 = SOSH_Token(TInt, "6");
+    auto tt = std::tuple_cat(t1, t2);
+    auto buff = tt;
+    
+    std::tuple<SOSH_Token> t3 = SOSH_Token(TInt, "7");
+    delete tt;
+    auto tt = std::tuple_cat(buff, t3);
+    delete buff;
+    auto buff = tt;*/
 };
 
 int main() {

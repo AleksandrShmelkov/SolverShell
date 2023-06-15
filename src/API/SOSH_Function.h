@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef SOSH_FUNCTION_H
 #define SOSH_FUNCTION_H
 
@@ -8,49 +10,81 @@
 #include <typeindex>
 #include <optional>
 #include <cstdarg>
+
 #include "API/SOSH_Token.h"
+
+/*
+
+Класс SOSH_Function_Base является базовым классом для функций, которые могут быть вызваны в интерпретаторе SOSH. 
+
+Он имеет следующие поля:
+- name: строка, содержащая имя функции.
+- type_return: переменная типа Token_t, хранящая информацию о том, какой тип данных будет возвращаться функцией.
+- type_args: вектор, содержащий переменные типа Token_t, определяющие типы аргументов, которые должны быть переданы функции.
+
+Также класс имеет методы:
+- GetName(): возвращает имя функции.
+- call(std::vector<SOSH_Token> & tokens): принимает на вход вектор объектов типа SOSH_Token, представляющих аргументы функции, и вызывает соответствующий метод apply() с передачей ему этих аргументов.
+- apply(args...): шаблонный метод, вызываемый из метода call(). Он принимает на вход список аргументов переменной длины и проверяет их типы. Если типы соответствуют ожидаемым, то метод вызывает метод applyWrapper() для выполнения действий, определенных в наследниках класса. Если типы не соответствуют ожидаемым, метод выводит сообщение об ошибке и возвращает объект типа SOSH_Token с типом SOSH_UNDEFINED.
+- applyWrapper(int count, ...): абстрактный виртуальный метод, реализация которого должна быть предоставлена в наследниках класса. Он принимает переменное число аргументов и использует их для выполнения действий, определенных в наследниках класса.
+
+*/
 
 class SOSH_Function_Base {
 protected:
-    std::string name;
-    Token_t type_return;
-    std::vector<Token_t> type_args;
+    std::string name; // имя функции
+    Token_t type_return; // тип возвращаемого значения
+    std::vector<Token_t> type_args; // список типов аргументов
 public:
     virtual ~SOSH_Function_Base() = default;
 
+    // Метод для получения имени функции
     std::string GetName() {
         return name;
     };
-    
-    auto call(std::vector<SOSH_Token> &tokens){
-        if (tokens.size() == 1) {
-             auto result = apply();
-             return result;
-        } else if (tokens.size() == 2) {
-            auto result = apply(tokens[1]);
-            return result;
-        } else if (tokens.size() == 3) {
-            auto result = apply(tokens[1], tokens[2]);
-            return result;
-        } else if (tokens.size() == 4) {
-            auto result = apply(tokens[1], tokens[2], tokens[3]);
-            return result;
-        } else if (tokens.size() == 5) {
-            auto result = apply(tokens[1], tokens[2], tokens[3], tokens[4]);
-            return result;
-        } else if (tokens.size() == 6) {
-            auto result = apply(tokens[1], tokens[2], tokens[3], tokens[4], tokens[5]);
-            return result;
-        } else if (tokens.size() == 7) {
-            auto result = apply(tokens[1], tokens[2], tokens[3], tokens[4], tokens[5], tokens[6]);
-            return result;
+
+    // Метод для получения имени функции
+    std::string GetTypeArgs() {
+        std::string str_type_args = "";
+        for (int i = 0; i < type_args.size(); i++) {
+            str_type_args = str_type_args + token_names[static_cast<int>(type_args[i])] + ", ";
+        };
+        if (str_type_args != "") { str_type_args = str_type_args.substr(0, str_type_args.size()-2); };
+        return str_type_args;
+    };
+
+    // Метод, который обрабатывает вызов функции с переданными аргументами и вызывает соответствующую функцию apply
+    template <size_t max_n = 20>
+    auto call(std::vector<SOSH_Token>& tokens) {
+        if (max_n > 0) {
+            if (tokens.size() > 1) {
+                return call_impl<max_n>(tokens, 2, tokens[1]); // Вызов функции если один или более аргументов до max_n
+            } else {
+                return apply(); // Вызов функции без аргументов
+            };
         } else {
-            throw std::runtime_error("Too many arguments");
+            std::cout << "Error: The maximum number of arguments cannot be less than or equal to zero. No function was called." << std::endl;
+            return SOSH_Token(Token_t::SOSH_UNDEFINED, "");
         };
     };
 
+    template <size_t max_n, typename... Token>
+    auto call_impl(std::vector<SOSH_Token>& tokens, int curr, Token&&... args) { 
+        if constexpr (max_n > 0) {
+            if (curr < tokens.size()) {
+                return call_impl<max_n-1>(tokens, ++curr, std::forward<Token>(args)..., tokens[curr]);
+            } else {
+                return apply(std::forward<Token>(args)...);
+            };
+        } else {
+            std::cout << "Error: Maximum number of arguments exceeded. No function was called." << std::endl;
+            return SOSH_Token(Token_t::SOSH_UNDEFINED, "");
+        };
+    };
+
+    // Метод, который применяет функцию к полученным аргументам и проверяет их типы
     template<typename... Token>
-    auto apply(Token&&... args){
+    auto apply(Token&&... args) {
         static_assert((std::is_same_v<SOSH_Token, std::remove_reference_t<Token>> && ...), "All arguments to apply must have type Token_t");
         std::vector<SOSH_Token> token_args = {args...};
         std::tuple<Token...> arg_tuple(std::forward<Token>(args)...);
@@ -64,6 +98,7 @@ public:
 
             if (token_args.size() == i) { 
                 return applyWrapper(sizeof...(args), ref_tuple);
+
             } else {
                 std::cout << "Inconsistency with the expected type of argument. Expected " 
                     << token_names[static_cast<int>(type_args[i])] << " but received " 
@@ -76,18 +111,38 @@ public:
         return SOSH_Token(Token_t::SOSH_UNDEFINED, "");
     };
 
+    // Метод, который используется для вызова функций из переменного количества аргументов
     virtual SOSH_Token applyWrapper(int count, ...) = 0;
 };
 
-template <typename Args> struct ToType2_ { using type = SOSH_Token&; };
-template <typename... Args> using ToType2 = typename ToType2_<Args...>::type;
+// Структура ToType_ представляет собой простую метафункцию, которая позволяет нам преобразовывать типы аргументов функции в типы SOSH_Token&.
+template <typename Args> struct ToType_ { using type = SOSH_Token&; };
+template <typename... Args> using ToType = typename ToType_<Args...>::type;
+
+/*
+
+Класс SOSH_Function наследует от класса SOSH_Function_Base и представляет конкретную функцию, которая может быть вызвана в интерпретаторе SOSH. 
+
+Он имеет следующие поля:
+- func: указатель на функцию, которую представляет объект класса.
+- type_return, type_args и name: унаследованные от SOSH_Function_Base поля.
+
+Также класс имеет методы:
+- AddReturn(Token_t type): устанавливает тип возвращаемого значения для функции.
+- AddArgs(Token_t type): добавляет тип ожидаемого аргумента для функции.
+- apply(args...): вызывает функцию, которую представляет объект класса, с передачей ему аргументов переменной длины.
+- apply(std::tuple<Args...> args_tuple): вызывает функцию, которую представляет объект класса, с передачей ему кортежа аргументов.
+- applyWrapper(int count, ...): реализация абстрактного метода applyWrapper() из базового класса.
+
+*/
 
 template<class R, class... Args>
 class SOSH_Function : public SOSH_Function_Base {
-private:
+public:
     typedef R (*Func)(Args...);
-    Func func;
-    using ArgsToToken = std::tuple<ToType2<Args>...>;
+private:
+    Func func; // указатель на функцию
+    using ArgsToToken = std::tuple<ToType<Args>...>; // список типов аргументов
 public:
     SOSH_Function(std::string s, Func f) : func(f) {
         this->name = s;
@@ -95,30 +150,32 @@ public:
     SOSH_Function(const SOSH_Function& other) : func(other.func) { // copy constructor 
         this->name = other.name;
     };
-    SOSH_Function(SOSH_Function&& other) noexcept : func(std::move(other.func)), args(std::move(other.args)) { // move constructor  
+    SOSH_Function(SOSH_Function&& other) noexcept : func(std::move(other.func)) { // move constructor 
         this->name = std::move(other.name);
     };
 
+    // Метод, который устанавливает тип возвращаемого значения для функции.
     void AddReturn(Token_t type){
         this->type_return = type;
     };
+
+    // Метод, который добавляет тип ожидаемого аргумента для функции.
     void AddArgs(Token_t type){
         this->type_args.push_back(type);
     };
 
+    // Метод, который вызывает саму функцию
     template<class... Args2>
     R apply(Args2&&... args){
         return func(std::forward<Args2>(args)...);
     };
 
-    /*R apply(ArgsToToken args_tuple){
-        return std::apply(func, std::forward<Args>(args_tuple.GetValue<Args>())...);
-    };*/
-
+    // Метод, который вызывает саму функцию
     R apply(std::tuple<Args...> args_tuple){
         return std::apply(func, std::move(args_tuple));
     };
 
+    // Метод, который используется для конвертирования кортежей аргументов и возвращаемого значения на их соответствующие типы и вызова функции
     SOSH_Token applyWrapper(int count, ...) override {   
         va_list ptr;
         va_start(ptr, count);
@@ -141,31 +198,19 @@ public:
     };
 };
 
-/*
-class SOSH_Function {
-private:
-    std::string name;
-    double (*link)(double,double); // void*
-    std::string arg;
-public:
-    SOSH_Function() = default;
-    SOSH_Function(const std::string &s, double (*l)(double,double)) :name(s), link(l) {};
-    bool EditFunction(const std::string &s, double (*l)(double,double));
-    double Run(double i, double j);
-    std::string GetName();
-};
-*/
-
+// Используется для смены местами элементов кортежа.
 template <typename... Ts, std::size_t... Is>
 auto tuple_reverse_helper(const std::tuple<Ts...>& tpl, std::index_sequence<Is...>) {
     return std::make_tuple(std::get<sizeof...(Ts) - Is - 1>(tpl)...);
 };
 
+// Вызывает tuple_reverse_helper() для смены местами элементов кортежа.
 template <typename... Ts>
 auto tuple_reverse(const std::tuple<Ts...>& tpl) {
     return tuple_reverse_helper(tpl, std::make_index_sequence<sizeof...(Ts)>{});
 };
 
+// Конвертирует один кортеж в другой, при этом сохраняя типы данных, которые указаны во втором кортеже.
 template <typename... Ts, typename... Us>
 auto tuple_convert(const std::tuple<Ts...>& tpl, const std::tuple<Us...>& tpl_template) {
     static_assert(sizeof...(Ts) == sizeof...(Us), "Tuple sizes must match");
@@ -173,9 +218,6 @@ auto tuple_convert(const std::tuple<Ts...>& tpl, const std::tuple<Us...>& tpl_te
         return std::make_tuple(static_cast<std::conditional_t<std::is_same_v<Ts, Us>, Ts, Us>>(args)...);
     }, tpl);
 };
-
-template <typename Args> struct ToType_ { using type = Args; };
-template <typename... Args> using ToType = typename ToType_<Args...>::type;
 
 class SOSH_Function2_Base {
 protected:
@@ -270,7 +312,6 @@ public:
 
     R apply(Args&&... args){
         return func(std::forward<Args>(args)...);
-        //return func(std::forward<SOSH_Token>(args.Value())...);
     };
 
     R apply(std::tuple<Args...> args_tuple){
@@ -316,7 +357,5 @@ public:
         //auto tpl_reversed = tuple_reverse(tpl);
     };
 };
-
-// SOSH_function.h .cpp в нем классы функций и аргументов
 
 #endif //SOSH_FUNCTION_H

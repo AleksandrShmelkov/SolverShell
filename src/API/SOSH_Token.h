@@ -1,5 +1,7 @@
-#ifndef SOSH_TOOLKIT_H
-#define SOSH_TOOLKIT_H
+#pragma once
+
+#ifndef SOSH_TOKEN_H
+#define SOSH_TOKEN_H
 
 #include <iostream>
 #include <string>
@@ -7,6 +9,7 @@
 #include <sstream>
 #include <variant>
 
+// Перечисление Token_t представляет собой перечисление типов токенов, которые могут быть использованы в языке программирования. Каждому типу соответствует уникальное значение.
 enum class Token_t {
     SOSH_FUNCTION_NAME,
     SOSH_INT,
@@ -25,10 +28,29 @@ const std::string token_names[] = {
     "SOSH_UNDEFINED"
 };
 
+/*
+
+Класс SOSH_Token представляет собой объект токена, который может быть использован в парсере для обработки кода на языке DSL.
+
+Поля:
+- token - тип токена из перечисления Token_t.
+- value - строковое значение токена.
+
+Методы:
+- SOSH_Token(Token_t t, std::string s) - конструктор класса, принимающий тип токена и строковое значение.
+- SOSH_Token(Token_t t) - конструктор класса, принимающий только тип токена.
+- EditValue(std::string v) - изменяет значение токена на переданную строку.
+- GetType() - возвращает тип токена.
+- template<typename T = std::string> T GetValue() const - возвращает значение токена, приведенное к заданному типу данных T.
+- std::variant<int, double, std::string> GetTypedValue() const - конвертирует значение токена на основе его внутреннего типа.
+- template<Token_t TokenType> auto GetValueByTokenType() const - конвертирует значение токена на основе заданного типа токена.
+
+*/
+
 class SOSH_Token {
 private:
-    Token_t token;
-    std::string value;
+    Token_t token; // тип токена из перечисления Token_t
+    std::string value; // строковое значение токена
 public:
     SOSH_Token(Token_t t, std::string s) :token(t), value(s) {};
     SOSH_Token(Token_t t) :token(t) {};

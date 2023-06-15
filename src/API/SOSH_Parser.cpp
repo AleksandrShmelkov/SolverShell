@@ -29,16 +29,3 @@ std::vector<SOSH_Token> SOSH_Parser::Tokenize(const std::string &s){
 
     return out;
 };
-
-std::vector<SOSH_Token> SOSH_Parser::Tokenize2(const std::string &input){
-    std::vector<SOSH_Token> tokens;
-    std::stringstream str(input);
-    std::string token;
-
-    while (getline(str, token, ' ')) {
-        SOSH_Token tokenout(Token_t::SOSH_STRING, token);
-        tokens.push_back(tokenout);
-    };
-
-    return tokens;
-};
