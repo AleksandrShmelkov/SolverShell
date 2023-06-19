@@ -51,36 +51,7 @@ public:
         };
         if (str_type_args != "") { str_type_args = str_type_args.substr(0, str_type_args.size()-2); };
         return str_type_args;
-    };
-
-    // Метод, который обрабатывает вызов функции с переданными аргументами и вызывает соответствующую функцию apply
-    template <size_t max_n = 20>
-    auto call(std::vector<SOSH_Token>& tokens) {
-        if (max_n > 0) {
-            if (tokens.size() > 1) {
-                return call_impl<max_n>(tokens, 2, tokens[1]); // Вызов функции если один или более аргументов до max_n
-            } else {
-                return apply(); // Вызов функции без аргументов
-            };
-        } else {
-            std::cout << "Error: The maximum number of arguments cannot be less than or equal to zero. No function was called." << std::endl;
-            return SOSH_Token(Token_t::SOSH_UNDEFINED, "");
-        };
-    };
-
-    template <size_t max_n, typename... Token>
-    auto call_impl(std::vector<SOSH_Token>& tokens, int curr, Token&&... args) { 
-        if constexpr (max_n > 0) {
-            if (curr < tokens.size()) {
-                return call_impl<max_n-1>(tokens, ++curr, std::forward<Token>(args)..., tokens[curr]);
-            } else {
-                return apply(std::forward<Token>(args)...);
-            };
-        } else {
-            std::cout << "Error: Maximum number of arguments exceeded. No function was called." << std::endl;
-            return SOSH_Token(Token_t::SOSH_UNDEFINED, "");
-        };
-    };
+    };    
 
     // Метод, который применяет функцию к полученным аргументам и проверяет их типы
     template<typename... Token>
@@ -109,6 +80,35 @@ public:
         };
         
         return SOSH_Token(Token_t::SOSH_UNDEFINED, "");
+    };
+
+    // Метод, который обрабатывает вызов функции с переданными аргументами и вызывает соответствующую функцию apply
+    template <size_t max_n = 20>
+    auto call(std::vector<SOSH_Token>& tokens) {
+        if (max_n > 0) {
+            if (tokens.size() > 1) {
+                return call_impl<max_n>(tokens, 2, tokens[1]); // Вызов функции если один или более аргументов до max_n
+            } else {
+                return apply(); // Вызов функции без аргументов
+            };
+        } else {
+            std::cout << "Error: The maximum number of arguments cannot be less than or equal to zero. No function was called." << std::endl;
+            return SOSH_Token(Token_t::SOSH_UNDEFINED, "");
+        };
+    };
+
+    template <size_t max_n, typename... Token>
+    auto call_impl(std::vector<SOSH_Token>& tokens, int curr, Token&&... args) { 
+        if constexpr (max_n > 0) {
+            if (curr < tokens.size()) {
+                return call_impl<max_n-1>(tokens, curr+1, std::forward<Token>(args)..., tokens[curr]);
+            } else {
+                return apply(std::forward<Token>(args)...);
+            };
+        } else {
+            std::cout << "Error: Maximum number of arguments exceeded. No function was called." << std::endl;
+            return SOSH_Token(Token_t::SOSH_UNDEFINED, "");
+        };
     };
 
     // Метод, который используется для вызова функций из переменного количества аргументов
@@ -183,7 +183,7 @@ public:
         va_end(ptr);
 
         std::tuple<Args...> true_tuple = std::apply([](auto&... args){ 
-            return std::make_tuple(std::forward<Args>(args.GetValue<Args>())...); 
+            return std::make_tuple(std::forward<Args>(args.template GetValue<Args>())...); 
         }, args_tuple);
 
         if constexpr (std::is_void_v<R>) {
@@ -267,12 +267,12 @@ public:
         };
     };
 
-    template<typename R, typename... Args>
+    /*template<typename R, typename... Args>
     auto apply2(Args&&... args){
         auto func = dynamic_cast<SOSH_Function2<R, Args...> *>(this);
         if( func == nullptr ) { throw std::runtime_error("casting failed"); };
         return func->apply(std::forward<Args>(args)...);
-    };
+    };*/
 
     virtual std::string applyWrapper(std::string &return_type_controller, std::vector<std::string> &args_base_type_controller, int count, ...) = 0;
 };

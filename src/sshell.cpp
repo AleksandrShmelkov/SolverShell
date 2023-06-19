@@ -63,7 +63,7 @@ void test_add(){
 };
 
 void test_SOSH_Function2_Base_Create(){
-    auto SOSH_Function2_add = SOSH_Function2_Base::Create("add", add);
+    /*auto SOSH_Function2_add = SOSH_Function2_Base::Create("add", add);
     int result = SOSH_Function2_add->apply2<int>(1,2);
     std::cout << "SOSH_Function2_add: " << result << std::endl << std::endl;
     delete SOSH_Function2_add;
@@ -71,7 +71,7 @@ void test_SOSH_Function2_Base_Create(){
     auto func = SOSH_Function2_Base::Create("add", add);
     int result2 = func->apply<int>(1,2);
     std::cout << "func: " << result2 << std::endl;
-    delete func;
+    delete func;*/
 };
 
 void test_sum_TokenArgs(){

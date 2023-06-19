@@ -1,4 +1,6 @@
 ﻿
+#set(CMAKE_CXX_FLAGS -Wno-non-pod-varargs)
+
 # Проверка версии CMake
 cmake_minimum_required(VERSION 3.5)
 
