@@ -10,6 +10,7 @@
 #include <typeindex>
 #include <optional>
 #include <cstdarg>
+#include <sstream>
 
 #include "API/SOSH_Token.h"
 
@@ -191,8 +192,11 @@ public:
             SOSH_Token res_token(Token_t::SOSH_VOID, "");
             return res_token;
         } else {
-            auto res = std::to_string(apply(true_tuple));
-            SOSH_Token res_token(this->type_return, res);
+            auto res = apply(true_tuple);
+            std::stringstream ss;
+            ss << res;
+            std::string str_variable = ss.str();
+            SOSH_Token res_token(this->type_return, str_variable);
             return res_token;
         };
     };

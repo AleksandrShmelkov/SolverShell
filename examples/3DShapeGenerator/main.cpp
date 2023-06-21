@@ -1,10 +1,13 @@
 ﻿
 #include "API.h"
+#include "writefile.h"
 
 using namespace std;
 
 int main()
 {
-	CreateShapes("torus.csv", { ShapeType::Cylinder, 10, 0 });
+	string str;
+	str = CreateRandomShapes({ 10, 0 });
+	WriteFile("test.csv", str);
 	return 0;
 }

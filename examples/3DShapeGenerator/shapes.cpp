@@ -9,7 +9,7 @@
 Point Figure::rotatePoint(Point p, double angle)
 {
 	Point p_new;
-	double theta = angle * M_PI / 180.0f;
+	double theta = angle * M_PI / 180;
 	p_new.x = p.x * cos(theta) - p.y * sin(theta);
 	p_new.y = p.x * sin(theta) + p.y * cos(theta);
 	p_new.z = p.z;
@@ -406,23 +406,11 @@ vector <Point> Cylinder::CreateFooting(double r, double h, double o)
 	return p;
 }
 
-//Point rotatePoints(Point& point, double angle)
-//{
-//	double cosTheta = cos(angle);
-//	double sinTheta = sin(angle);
-//	Point rotatedPoint;
-//	rotatedPoint.x = point.x * cosTheta + point.z * sinTheta;
-//	rotatedPoint.y = point.y;
-//	rotatedPoint.z = -point.x * sinTheta + point.z * cosTheta;
-//	return rotatedPoint;
-//}
-
 // Функция генерации стенок цилиндра
 vector <Point> Cylinder::CreateWalls()
 {
 	vector <Point> p;
 	Point dot;
-	Point newp;
 	double hlp_y = 0;
 	double k = 0;
 	double angle = GetRandIntNumb(0, 360);
@@ -435,12 +423,9 @@ vector <Point> Cylinder::CreateWalls()
 			dot.x = r * cos(i) + k_x;
 			dot.y = hlp_y + k_y;
 			dot.z = r * sin(i) + k_z;
-			//newp.x = dot.x * cos(theta) - dot.y * sin(theta);
-			//newp.y = dot.x * sin(theta) + dot.y * cos(theta);
-			//newp.z = dot.z;
-			newp = rotatePoint(dot, GetRandIntNumb(0, 360));  //пончик
-			p.push_back(newp);  // пончик
-			//p.push_back(rotatePoint(dot, angle));
+			//newp = rotatePoint(dot, GetRandIntNumb(0, 360));  //пончик
+			//p.push_back(newp);  // пончик
+			p.push_back(rotatePoint(dot, angle));
 		}
 	}
 	return p;
@@ -453,6 +438,7 @@ vector <Point> Cylinder::CreateWalls(double o)
 	Point dot;
 	double hlp_y = 0;
 	double k = 0;
+	double angle = GetRandIntNumb(0, 360);
 	while (hlp_y < h)
 	{
 		k = GetRandRealNumb(2, 4);
@@ -462,7 +448,7 @@ vector <Point> Cylinder::CreateWalls(double o)
 			dot.x = GetNormDistNumb(r * cos(i), o) + k_x;
 			dot.y = GetNormDistNumb(hlp_y, o) + k_y;
 			dot.z = GetNormDistNumb(r * sin(i), o) + k_z;
-			p.push_back(dot);
+			p.push_back(rotatePoint(dot, angle));
 		}
 	}
 	return p;

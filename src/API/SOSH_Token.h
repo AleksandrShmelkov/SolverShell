@@ -57,6 +57,8 @@ public:
     void EditValue(std::string v); // Изменяет внутренее значение
     Token_t GetType(); // Возвращает внутрений тип
     template<typename T = std::string> T GetValue() const; // Возвращает значение на основе внешнего типа
+    template<> std::string GetValue<std::string>() const;
+
     std::variant<int, double, std::string> GetTypedValue() const; // Конвертирует на основе внутреннего Token_t
     template<Token_t TokenType> auto GetValueByTokenType() const; // Конвертирует на основе внешнего Token_t
 };
@@ -64,8 +66,33 @@ public:
 template<typename T> 
 T SOSH_Token::GetValue() const {
     T v;
-    std::istringstream ( value ) >> v;
+    std::istringstream iss(value);
+    /*if (std::is_same<T, std::string>::value) {
+        std::getline(iss, v, '\n');
+    };*/
+    /*int count = 0;
+    std::string buff = "";
+    for (char c : value) {
+        if (c == '\n') {
+            count++;
+        };
+    };
+    if (count > 0) {
+        for (int i = 0; i < count; i++) {
+            iss >> v;
+            buff = buff + v;
+        };
+        v = buff;
+    } else {
+        iss >> v;
+    };*/
+    iss >> v;
     return v;
+};
+
+template<> 
+std::string SOSH_Token::GetValue<std::string>() const {
+    return value;
 };
 
 template<Token_t TokenType>

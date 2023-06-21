@@ -5,7 +5,7 @@ constexpr Token_t TInt = Token_t::SOSH_INT;
 constexpr Token_t TDouble = Token_t::SOSH_DOUBLE;
 constexpr Token_t TString = Token_t::SOSH_STRING;
 
-void ShapeParam(std::string file_name, std::string type_name, int param1, double param2) {
+std::string ShapeParam(std::string type_name, int param1, double param2) {
     ShapeType type;
     if (type_name == "Cylinder") {
         type = ShapeType::Cylinder;
@@ -14,9 +14,9 @@ void ShapeParam(std::string file_name, std::string type_name, int param1, double
     } else if (type_name == "Plane") {
         type = ShapeType::Plane;
     };
-    file_name = file_name+".csv";
-    const char* char_file_name = file_name.c_str();
-    CreateShapes(char_file_name, { type, param1, param2 });
+    //file_name = file_name+".csv";
+    //const char* char_file_name = file_name.c_str();
+    return CreateShapes({ type, param1, param2 });
 };
 
 int main() {
@@ -26,7 +26,7 @@ int main() {
 
     // Создание объектов функций
     SOSH_Function SOSH_Equation_create_shapes("create_shapes", ShapeParam);
-    SOSH_Equation_create_shapes.AddArgs(TString);
+    SOSH_Equation_create_shapes.AddReturn(TString);
     SOSH_Equation_create_shapes.AddArgs(TString);
     SOSH_Equation_create_shapes.AddArgs(TInt);
     SOSH_Equation_create_shapes.AddArgs(TDouble);
@@ -39,6 +39,7 @@ int main() {
     // Парсинг командной строки и выполнение функций
     SOSH_Parser pars;
     std::string input = "equ 1 -8 16";
+    std::string result = "";
     while (true) {
         std::cout << "\nsosh> ";
         getline(std::cin, input);
@@ -57,7 +58,7 @@ int main() {
         if (ShapeGenerator_func == nullptr) {
             std::cout << tokens[0].GetValue() << ": function not found." << std::endl;
         } else {
-            ShapeGenerator_func->call<5>(tokens);
+            result = ShapeGenerator_func->call<5>(tokens).GetValue();
         };
     };
 
