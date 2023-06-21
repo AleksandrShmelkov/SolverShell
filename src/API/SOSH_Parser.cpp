@@ -1,3 +1,6 @@
+#ifndef SOSH_PARSER_CPP
+#define SOSH_PARSER_CPP
+
 #include "SOSH_Parser.h"
 
 std::vector<SOSH_Token> SOSH_Parser::Tokenize(const std::string &s){
@@ -29,3 +32,5 @@ std::vector<SOSH_Token> SOSH_Parser::Tokenize(const std::string &s){
 
     return out;
 };
+
+#endif // SOSH_PARSER_CPP

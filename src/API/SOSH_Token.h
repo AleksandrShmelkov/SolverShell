@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef SOSH_TOKEN_H
 #define SOSH_TOKEN_H
 
@@ -90,11 +88,6 @@ T SOSH_Token::GetValue() const {
     return v;
 };
 
-template<> 
-std::string SOSH_Token::GetValue<std::string>() const {
-    return value;
-};
-
 template<Token_t TokenType>
 auto SOSH_Token::GetValueByTokenType() const {
     if constexpr (TokenType == Token_t::SOSH_FUNCTION_NAME) {
@@ -114,4 +107,4 @@ auto SOSH_Token::GetValueByTokenType() const {
 // Создать структуру в виде двухсвязного списка где поля содержит ссылку на объект типа этой структуры ? 
 // ...Первй пустой обьект этой структуры присвоить классу shell. Структура будет содержать ссылки на обьекты класса функции.
 
-#endif
+#endif // SOSH_TOKEN_H

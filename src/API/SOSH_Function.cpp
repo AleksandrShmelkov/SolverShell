@@ -1,3 +1,6 @@
+#ifndef SOSH_FUNCTION_CPP
+#define SOSH_FUNCTION_CPP
+
 #include "SOSH_Function.h"
 
 /*
@@ -15,3 +18,5 @@ double SOSH_Function::Run(double i, double j){
     return link(i, j);
 };
 */
+
+#endif //SOSH_FUNCTION_CPP

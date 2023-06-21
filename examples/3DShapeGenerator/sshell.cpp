@@ -24,8 +24,18 @@ int main() {
 
     //ShapeType_func("torus.csv", "Cylinder", 10, 0);
 
+    /*std::string description = 
+        std::string("The first argument - contains the type of shape (Cylinder, Sphere, Plane).\n") +
+        std::string("The second argument - contains the number of shapes to be generated.\n") +
+        std::string("The third argument - contains the division."); */
+
     // Создание объектов функций
-    SOSH_Function SOSH_Equation_create_shapes("create_shapes", ShapeParam);
+    std::stringstream ss;
+    ss << "The first argument - contains the type of shape (Cylinder, Sphere, Plane).\n";
+    ss << "The second argument - contains the number of shapes to be generated.\n";
+    ss << "The third argument - contains the division.";
+    std::string description = ss.str();
+    SOSH_Function SOSH_Equation_create_shapes("create_shapes", ShapeParam, description);
     SOSH_Equation_create_shapes.AddReturn(TString);
     SOSH_Equation_create_shapes.AddArgs(TString);
     SOSH_Equation_create_shapes.AddArgs(TInt);
@@ -47,7 +57,8 @@ int main() {
         if ((input == "help") || (input == "Help")) {
             std::vector<std::reference_wrapper<SOSH_Function_Base>> funcs_pool = ShapeGenerator.ListFunction();
             for (int i = 0; i < funcs_pool.size(); i++) {
-                std::cout << "func - " << funcs_pool[i].get().GetName() << " (" << funcs_pool[i].get().GetTypeArgs() << ")" << std::endl;
+                std::cout << "\nfunc - " << funcs_pool[i].get().GetName() << " (" << funcs_pool[i].get().GetTypeArgs() << ")" << std::endl;
+                std::cout << funcs_pool[i].get().GetDescription() << std::endl;
             };
             continue;
         };

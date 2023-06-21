@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef SOSH_PARSER_H
 #define SOSH_PARSER_H
 
@@ -9,7 +7,7 @@
 #include <regex>
 #include <sstream>
 
-#include "API/SOSH_Token.h"
+#include "SOSH_Token.cpp"
 
 /*
 
@@ -30,4 +28,4 @@ public:
     std::vector<SOSH_Token> Tokenize(const std::string &s); // метод, который токенизирует строку и возвращает вектор токенов
 };
 
-#endif
+#endif // SOSH_PARSER_H

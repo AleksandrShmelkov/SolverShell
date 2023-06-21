@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SSHELL_API_H
 #define SSHELL_API_H
 
@@ -7,7 +8,7 @@
 #include <regex>
 #include <sstream>
 
-#include "API/SOSH_Manager.h"
+#include "SOSH_Manager.cpp"
 
 
-#endif
+#endif // SSHELL_API_H

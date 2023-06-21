@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef SOSH_FUNCTION_H
 #define SOSH_FUNCTION_H
 
@@ -12,7 +10,7 @@
 #include <cstdarg>
 #include <sstream>
 
-#include "API/SOSH_Token.h"
+#include "SOSH_Token.cpp"
 
 /*
 
@@ -34,6 +32,7 @@
 class SOSH_Function_Base {
 protected:
     std::string name; // имя функции
+    std::string description; // описание функции
     Token_t type_return; // тип возвращаемого значения
     std::vector<Token_t> type_args; // список типов аргументов
 public:
@@ -42,6 +41,11 @@ public:
     // Метод для получения имени функции
     std::string GetName() {
         return name;
+    };
+
+    // Метод для получения описания функции
+    std::string GetDescription() {
+        return description;
     };
 
     // Метод для получения имени функции
@@ -145,14 +149,17 @@ private:
     Func func; // указатель на функцию
     using ArgsToToken = std::tuple<ToType<Args>...>; // список типов аргументов
 public:
-    SOSH_Function(std::string s, Func f) : func(f) {
+    SOSH_Function(std::string s, Func f, std::string d = "") : func(f) {
         this->name = s;
+        this->description = d;
     };
     SOSH_Function(const SOSH_Function& other) : func(other.func) { // copy constructor 
         this->name = other.name;
+        this->description = other.description;
     };
     SOSH_Function(SOSH_Function&& other) noexcept : func(std::move(other.func)) { // move constructor 
         this->name = std::move(other.name);
+        this->description = std::move(other.description);
     };
 
     // Метод, который устанавливает тип возвращаемого значения для функции.

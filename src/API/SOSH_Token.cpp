@@ -1,3 +1,6 @@
+#ifndef SOSH_TOKEN_CPP
+#define SOSH_TOKEN_CPP
+
 #include "SOSH_Token.h"
 
 void SOSH_Token::EditValue(std::string v) {
@@ -6,6 +9,11 @@ void SOSH_Token::EditValue(std::string v) {
 
 Token_t SOSH_Token::GetType(){
     return token;
+};
+
+template<> 
+std::string SOSH_Token::GetValue<std::string>() const {
+    return value;
 };
 
 std::variant<int, double, std::string> SOSH_Token::GetTypedValue() const {
@@ -57,3 +65,5 @@ std::ostream &operator<<(std::ostream &stream, const Token_t token) {
 
   return stream;
 };
+
+#endif // SOSH_TOKEN_CPP

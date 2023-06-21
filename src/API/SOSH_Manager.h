@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef SOSH_MANAGER_H
 #define SOSH_MANAGER_H
 
@@ -9,7 +7,7 @@
 #include <regex>
 #include <sstream>
 
-#include "API/SOSH_Shell.h"
+#include "SOSH_Shell.cpp"
 
 /*
 
@@ -34,4 +32,4 @@ public:
     std::vector<SOSH_Shell> ListShell(); // метод, который возвращает вектор объектов типа SOSH_Shell, содержащий все добавленные оболочки в shell_pool
 };
 
-#endif
+#endif // SOSH_MANAGER_H

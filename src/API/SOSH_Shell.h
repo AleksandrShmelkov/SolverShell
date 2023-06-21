@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef SOSH_SHELL_H
 #define SOSH_SHELL_H
 
@@ -9,8 +7,8 @@
 #include <regex>
 #include <sstream>
 
-#include "API/SOSH_Function.h"
-#include "API/SOSH_Parser.h"
+#include "SOSH_Function.cpp"
+#include "SOSH_Parser.cpp"
 
 /*
 
@@ -43,4 +41,4 @@ public:
     std::string GetName(); // метод, который возвращает имя оболочки в виде строки
 };
 
-#endif
+#endif // SOSH_SHELL_H
