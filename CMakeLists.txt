@@ -1,5 +1,8 @@
 cmake_minimum_required (VERSION 3.23)
 
+SET(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/bin) # ${PROJECT_SOURCE_DIR}/src
+message("CIP = ${CMAKE_INSTALL_PREFIX}")
+
 project(SolverShell)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -11,3 +14,4 @@ add_subdirectory(test)
 add_subdirectory(lib/googletest)
 add_subdirectory(examples/Equation)
 add_subdirectory(examples/3DShapeGenerator)
+

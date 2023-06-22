@@ -10,7 +10,7 @@
 #include <cstdarg>
 #include <sstream>
 
-#include "SOSH_Token.cpp"
+#include "SOSH_Token.h"
 
 /*
 
@@ -240,10 +240,10 @@ protected:
 public:
     virtual ~SOSH_Function2_Base() = default;
 
-    template<class R, class... Args>
+    /*template<class R, class... Args>
     static SOSH_Function2_Base* Create(std::string name, R (*func)(Args...)){
         return new SOSH_Function2<R, Args...>(name, func);
-    };
+    };*/
 
     std::string GetName(){
         return name;

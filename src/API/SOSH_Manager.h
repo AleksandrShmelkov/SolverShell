@@ -7,7 +7,7 @@
 #include <regex>
 #include <sstream>
 
-#include "SOSH_Shell.cpp"
+#include "SOSH_Shell.h"
 
 /*
 

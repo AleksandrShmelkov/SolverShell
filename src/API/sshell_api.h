@@ -8,7 +8,7 @@
 #include <regex>
 #include <sstream>
 
-#include "SOSH_Manager.cpp"
+#include "SOSH_Manager.h"
 
 
 #endif // SSHELL_API_H

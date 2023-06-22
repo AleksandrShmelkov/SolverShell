@@ -7,7 +7,7 @@
 #include <regex>
 #include <sstream>
 
-#include "SOSH_Token.cpp"
+#include "SOSH_Token.h"
 
 /*
 

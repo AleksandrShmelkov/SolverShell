@@ -11,11 +11,6 @@ Token_t SOSH_Token::GetType(){
     return token;
 };
 
-template<> 
-std::string SOSH_Token::GetValue<std::string>() const {
-    return value;
-};
-
 std::variant<int, double, std::string> SOSH_Token::GetTypedValue() const {
     switch (token) {
         case Token_t::SOSH_INT:

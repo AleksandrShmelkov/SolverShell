@@ -1,5 +1,6 @@
 ﻿#include "API/sshell_api.h"
 #include "Equation.h"
+#include <locale>
 
 constexpr Token_t TInt = Token_t::SOSH_INT;
 constexpr Token_t TDouble = Token_t::SOSH_DOUBLE;
@@ -23,24 +24,28 @@ void Equation_print_roots(){
 };
 
 int main() {
-    system("chcp 65001");
+    //system("chcp 65001");
+    setlocale(LC_ALL, "Russian");
+    // Настраиваем кодировку ввода-вывода консоли
+    //SetConsoleCP(65001);
+    //SetConsoleOutputCP(65001);
 
     // Создание объектов функций
-    SOSH_Function SOSH_Equation_add_equ("add_equ", Equation_func);
+    SOSH_Function SOSH_Equation_add_equ("зарегистрировать_коэффициенты", Equation_func); // register_coefficients
     SOSH_Equation_add_equ.AddArgs(TInt);
     SOSH_Equation_add_equ.AddArgs(TInt);
     SOSH_Equation_add_equ.AddArgs(TInt);
     SOSH_Function_Base& SOSH_Equation_Base_add_equ = SOSH_Equation_add_equ;
 
-    SOSH_Function SOSH_Equation_add_line_equ("add_line_equ", Equation_line_func);
+    SOSH_Function SOSH_Equation_add_line_equ("зарегистрировать_линейные_коэффициенты", Equation_line_func); // register_linear_coefficients
     SOSH_Equation_add_line_equ.AddArgs(TInt);
     SOSH_Equation_add_line_equ.AddArgs(TInt);
     SOSH_Function_Base& SOSH_Equation_Base_add_line_equ = SOSH_Equation_add_line_equ;
 
-    SOSH_Function SOSH_Equation_calc_roots("calc_roots", Equation_calc_roots);
+    SOSH_Function SOSH_Equation_calc_roots("вычислить_корни", Equation_calc_roots); // compute_roots
     SOSH_Function_Base& SOSH_Equation_Base_calc_roots = SOSH_Equation_calc_roots;
 
-    SOSH_Function SOSH_Equation_print_roots("print_roots", Equation_print_roots);
+    SOSH_Function SOSH_Equation_print_roots("отобразить_корни", Equation_print_roots); // display_roots
     SOSH_Function_Base& SOSH_Equation_Base_print_roots = SOSH_Equation_print_roots;
 
     // Добавление объектов функций в шелл
@@ -65,7 +70,9 @@ int main() {
             continue;
         };
         
+        std::cout << "123 " << input << std::endl << std::endl;
         std::vector<SOSH_Token> tokens = pars.Tokenize(input);
+        std::cout << "456 " << input << std::endl << std::endl;
 
         auto BaseEqsCounter_func = BaseEqsCounter.FindFunction(tokens[0].GetValue());
         if (BaseEqsCounter_func == nullptr) {

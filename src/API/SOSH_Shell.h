@@ -7,8 +7,8 @@
 #include <regex>
 #include <sstream>
 
-#include "SOSH_Function.cpp"
-#include "SOSH_Parser.cpp"
+#include "SOSH_Function.h"
+#include "SOSH_Parser.h"
 
 /*
 

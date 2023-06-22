@@ -88,6 +88,11 @@ T SOSH_Token::GetValue() const {
     return v;
 };
 
+template<> 
+std::string SOSH_Token::GetValue<std::string>() const {
+    return value;
+};
+
 template<Token_t TokenType>
 auto SOSH_Token::GetValueByTokenType() const {
     if constexpr (TokenType == Token_t::SOSH_FUNCTION_NAME) {
