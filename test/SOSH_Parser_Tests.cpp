@@ -1,18 +1,48 @@
-#include "gtest/gtest.h"
-#include "API/sshell_api.h"
+#include <gtest/gtest.h>
+#include "SOSH/SOSH_Parser.h"
 
-TEST(SOSH_Parser, Tokenize) {
-    SOSH_Parser pars;
-    std::vector<SOSH_Token> tokens;
-    tokens = pars.Tokenize("sum qwer 4.667 8");
+TEST(SOSH_ParserTest, TestBasicArithmetic) {
+    SOSH_Parser parser("2 + 3 * 4");
+    ASTNode* result = parser.parse();
+    EXPECT_EQ(result->evaluate(), 14.0);
 
-    EXPECT_EQ(tokens[0].Type(), Token_t::SOSH_FUNCTION_NAME);
-    EXPECT_EQ(tokens[1].Type(), Token_t::SOSH_STRING);
-    EXPECT_EQ(tokens[2].Type(), Token_t::SOSH_DOUBLE);
-    EXPECT_EQ(tokens[3].Type(), Token_t::SOSH_INT);
+    delete result;
+}
 
-    EXPECT_EQ(tokens[0].Value<std::string>(), "sum");
-    EXPECT_EQ(tokens[1].Value<std::string>(), "qwer");
-    EXPECT_EQ(tokens[2].Value<double>(), 4.667);
-    EXPECT_EQ(tokens[3].Value<int>(), 8);
+TEST(SOSH_ParserTest, TestNegativeNumbers) {
+    SOSH_Parser parser("-5 + 8 - -3");
+    ASTNode* result = parser.parse();
+    EXPECT_EQ(result->evaluate(), 6.0);
+
+    delete result;
+}
+
+TEST(SOSH_ParserTest, TestParentheses) {
+    SOSH_Parser parser("(2 + 3) * 4");
+    ASTNode* result = parser.parse();
+    EXPECT_EQ(result->evaluate(), 20.0);
+
+    delete result;
+}
+
+/*TEST(SOSH_ParserTest, TestFunctions) {
+    SOSH_Shell shell;
+    shell.AddFunction("add", [](std::vector<double> args) { return args[0] + args[1]; });
+    shell.AddFunction("subtract", [](std::vector<double> args) { return args[0] - args[1]; });
+
+    SOSH_Parser parser("add(2, 3) - subtract(5, 2)");
+    ASTNode* result = parser.parse();
+    EXPECT_EQ(result->evaluate(), 4.0);
+
+    delete result;
+}*/
+
+TEST(SOSH_ParserTest, TestInvalidExpression) {
+    SOSH_Parser parser("2 + * 3");
+    EXPECT_THROW(parser.parse(), std::runtime_error);
+}
+
+TEST(SOSH_ParserTest, TestMismatchedParentheses) {
+    SOSH_Parser parser("(2 + 3 * 4");
+    EXPECT_THROW(parser.parse(), std::runtime_error);
 }

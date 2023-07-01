@@ -1,50 +1,40 @@
+//#include "gmock/gmock.h"
 #include "gtest/gtest.h"
-#include "API/sshell_api.h"
+#include "SOSH/SOSH_Token.h"
 
-const double precision = 1e-7;
-//using SOSH_INTTT = Token_t::SOSH_INT;
-
-TEST(SOSH_Token, SOSH_FUNCTION_NAME) {
-    SOSH_Token token(Token_t::SOSH_FUNCTION_NAME, "sum");
-    EXPECT_EQ("sum", token.Value<std::string>()); 
-    EXPECT_EQ(Token_t::SOSH_FUNCTION_NAME, token.Type());
+TEST(SOSH_TokenTest, GetValue_IntType) {
+    SOSH_Token token(Token_t::SOSH_INT, "42");
+    int value = token.GetValue<int>();
+    EXPECT_EQ(42, value);
 }
 
-TEST(SOSH_Token, SOSH_INT) {
-    SOSH_Token token(Token_t::SOSH_INT, "1");
-    EXPECT_EQ(1, token.Value<int>());
-    EXPECT_EQ(Token_t::SOSH_INT, token.Type());
-    EXPECT_NEAR(1., token.Value<int>(), precision);
+TEST(SOSH_TokenTest, GetValue_StringType) {
+    SOSH_Token token(Token_t::SOSH_STRING, "Hello");
+    std::string value = token.GetValue<std::string>();
+    EXPECT_EQ("Hello", value);
 }
 
-TEST(SOSH_Token, SOSH_DOUBLE) {
-    SOSH_Token token(Token_t::SOSH_DOUBLE, "1.1");
-    EXPECT_EQ(1.1, token.Value<double>());
-    EXPECT_EQ(Token_t::SOSH_DOUBLE, token.Type());
-    EXPECT_NEAR(1.1, token.Value<double>(), precision);
+TEST(SOSH_TokenTest, GetValue_DefaultType) {
+    SOSH_Token token(Token_t::SOSH_FLOAT, "3.14");
+    float value = token.GetValue<float>();
+    EXPECT_FLOAT_EQ(3.14f, value);
 }
 
-TEST(SOSH_Token, SOSH_DOUBLE_T) {
-    SOSH_Token token(Token_t::SOSH_DOUBLE, "1.1");
-    EXPECT_EQ("1.1", token.Value<std::string>());
-    EXPECT_EQ(Token_t::SOSH_DOUBLE, token.Type());
-    EXPECT_NEAR(1.1, token.Value<double>(), precision);
+TEST(SOSH_TokenTest, EditValue) {
+    SOSH_Token token(Token_t::SOSH_IDENTIFIER, "var");
+    token.EditValue("variable");
+    std::string lexeme = token.GetValue<std::string>();
+    EXPECT_EQ("variable", lexeme);
 }
 
-TEST(SOSH_Token, SOSH_STRING) {
-    SOSH_Token token(Token_t::SOSH_STRING, "qwerty");
-    EXPECT_EQ("qwerty", token.Value<std::string>());
-    EXPECT_EQ(Token_t::SOSH_STRING, token.Type());
+TEST(SOSH_TokenTest, GetType) {
+    SOSH_Token token(Token_t::SOSH_KEYWORD);
+    Token_t type = token.GetType();
+    EXPECT_EQ(Token_t::SOSH_KEYWORD, type);
 }
 
-TEST(SOSH_Token, SOSH_STRING_T) {
-    SOSH_Token token(Token_t::SOSH_INT, "2");
-    EXPECT_EQ("2", token.Value());
-    EXPECT_EQ(Token_t::SOSH_INT, token.Type());
-}
-
-TEST(SOSH_Token, SOSH_UNDEFINED) {
-    SOSH_Token token(Token_t::SOSH_UNDEFINED, "`");
-    EXPECT_EQ("`", token.Value<std::string>()); 
-    EXPECT_EQ(Token_t::SOSH_UNDEFINED, token.Type());
+TEST(SOSH_TokenTest, GetValue_CharType) {
+    SOSH_Token token(Token_t::SOSH_CHAR, "A");
+    char value = token.GetValue<char>();
+    EXPECT_EQ('A', value);
 }

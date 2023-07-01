@@ -50,7 +50,7 @@ target_link_libraries(myAPI
 # SolverShell
 set(BINARY ${CMAKE_PROJECT_NAME}_3DShapeGenerator)
 add_executable(${BINARY} 
-	sshell.cpp
+	sosh.cpp
 	api.cpp
 	api.h
 	randomization.cpp

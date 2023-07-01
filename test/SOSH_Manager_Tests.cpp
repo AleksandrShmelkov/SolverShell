@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "API/sshell_api.h"
+#include "SOSH/SOSH_Manager.h"
 
 TEST(SOSH_Manager, AddShell) {
     SOSH_Manager manager;

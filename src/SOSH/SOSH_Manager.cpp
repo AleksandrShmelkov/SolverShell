@@ -1,6 +1,3 @@
-#ifndef SOSH_MANAGER_CPP
-#define SOSH_MANAGER_CPP
-
 #include "SOSH_Manager.h"
 
 bool SOSH_Manager::AddShell(SOSH_Shell &s) {
@@ -20,5 +17,3 @@ SOSH_Shell SOSH_Manager::FindShell(const std::string &s) {
 std::vector<SOSH_Shell> SOSH_Manager::ListShell() {
     return shell_pool;
 };
-
-#endif // SOSH_MANAGER_CPP
